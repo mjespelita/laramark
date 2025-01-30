@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "laramark/laramark",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Fullstack Laravel Development with Putter and Smark",
+    "keywords": ["laramark", "laravel", "framework"],
     "license": "MIT",
     "require": {
         "php": "^8.2",
