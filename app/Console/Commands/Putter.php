@@ -297,6 +297,13 @@ $this->info("SUCCESS: Template layouts/main.blade.php created.\n");
                                                 $validation .= "'$column' => '$validate',";
                                             }
 
+                                            // replace the 'false' string to 'true' in Store Request file
+
+                                            $fileContents = file_get_contents($storeRequestPath);
+                                            $fileContents = str_replace('false', 'true', $fileContents);
+
+                                            file_put_contents($storeRequestPath, $fileContents);
+
                                             putter($storeRequestPath, "//", "\n".$validation);
 
                                             $this->info("SUCCESS: Store request modified.\n");
@@ -315,6 +322,13 @@ $this->info("SUCCESS: Template layouts/main.blade.php created.\n");
                                                 $column = $attribute['col'];
                                                 $validation .= "'$column' => '$validate',";
                                             }
+
+                                            // replace the 'false' string to 'true' in Store Request file
+
+                                            $fileContents = file_get_contents($updateRequestPath);
+                                            $fileContents = str_replace('false', 'true', $fileContents);
+
+                                            file_put_contents($updateRequestPath, $fileContents);
 
                                             putter($updateRequestPath, "//", "\n".$validation);
 
