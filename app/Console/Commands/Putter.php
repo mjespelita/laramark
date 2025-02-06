@@ -350,6 +350,7 @@ Route::get('/delete-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelNa
 Route::get('/destroy-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'destroy'])->name('{$modelNameLowerCase}.destroy');
 Route::post('/store-{$modelNameLowerCase}', [{$modelName}Controller::class, 'store'])->name('{$modelNameLowerCase}.store');
 Route::post('/update-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'update'])->name('{$modelNameLowerCase}.update');
+Route::post('/delete-all-bulk-data', [{$modelName}Controller::class, 'bulkDelete']);
 
 // $modelName Search
 Route::get('/$modelNameLowerCase-search', function (Request \$request) {
@@ -411,6 +412,16 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
             </div>
         </div>
     </form>
+
+    <button type='button' class='btn btn-outline-secondary dropdown-toggle' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+        Bulk Action
+    </button>
+    <div class='dropdown-menu'>
+        <a class='dropdown-item bulk-delete' href='#'>
+            <i class='fa fa-trash'></i> Delete
+        </a>
+    </div>
+
     <div class='table-responsive'>
         <table class='table table-striped'>
             <thead>
@@ -440,6 +451,39 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
         </table>
     </div>
     {{ $".$modelNameLowerCase."->links('pagination::bootstrap-5') }}
+
+    <script src='{{ url('assets/jquery/jquery.min.js') }}'></script>
+    <script>
+        $(document).ready(function () {
+
+            // checkbox
+
+            var click = false;
+            $('.checkAll').on('click', function() {
+                $('.check').prop('checked', !click);
+                click = !click;
+                this.innerHTML = click ? 'Deselect' : 'Select';
+            });
+
+            $('.bulk-delete').click(function () {
+                let array = [];
+                $('.check:checked').each(function() {
+                    array.push($(this).attr('data-id'));
+                });
+
+
+                console.log('asdasd')
+
+                $.post('/delete-all-bulk-data', {
+                    ids: array,
+                    _token: $('meta[name=\"csrf-token\"]').attr('content')
+                }, function (res) {
+                    console.log(res)
+                    window.location.reload();
+                })
+            })
+        });
+    </script>
 @endsection
 ");
 $this->info("SUCCESS: View $modelNameLowerCase/$modelNameLowerCase.blade.php created.\n");
@@ -699,6 +743,15 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                     {$modelName}::where('id', \${$modelNameLowerCase}Id)->delete();
 
                                                     return redirect('/{$modelNameLowerCase}');
+                                                }
+
+                                                public function bulkDelete(Request \$request) {
+
+                                                    foreach (\$request->ids as \$value) {
+                                                        \$deletable = Logs::find(\$value);
+                                                        \$deletable->delete();
+                                                    }
+                                                    return response()->json("Deleted");
                                                 }
                                             }
                                             PHP;

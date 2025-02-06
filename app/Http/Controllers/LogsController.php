@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\{Logs};
 use App\Http\Requests\StoreLogsRequest;
 use App\Http\Requests\UpdateLogsRequest;
+use Illuminate\Http\Request;
 
 class LogsController extends Controller {
     /**
@@ -83,5 +84,14 @@ class LogsController extends Controller {
         Logs::where('id', $logsId)->delete();
 
         return redirect('/logs');
+    }
+
+    public function bulkDelete(Request $request) {
+
+        foreach ($request->ids as $value) {
+            $deletable = Logs::find($value);
+            $deletable->delete();
+        }
+        return response()->json("Deleted");
     }
 }

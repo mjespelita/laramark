@@ -49,6 +49,7 @@
         <script src='{{ url('assets/bootstrap/bootstrap.bundle.min.js') }}'></script>
 
         <!-- Custom JavaScript -->
+        <script src="{{ url('assets/custom/script.js') }}"></script>
         <script>
             function toggleSidebar() {
                 document.getElementById('mobileSidebar').classList.toggle('active');

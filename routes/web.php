@@ -26,6 +26,7 @@ Route::middleware([
     Route::get('/destroy-logs/{logsId}', [LogsController::class, 'destroy'])->name('logs.destroy');
     Route::post('/store-logs', [LogsController::class, 'store'])->name('logs.store');
     Route::post('/update-logs/{logsId}', [LogsController::class, 'update'])->name('logs.update');
+    Route::post('/delete-all-bulk-data', [LogsController::class, 'bulkDelete']);
 
     // Logs Search
     Route::get('/logs-search', function (Request $request) {
