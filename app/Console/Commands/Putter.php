@@ -426,6 +426,9 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
         <table class='table table-striped'>
             <thead>
                 <tr>
+                    <th scope='col'>
+                      <input type='checkbox' name='' id='' class='checkAll'>
+                    </th>
                     <th>#</th>
                     $headlinesStringHandler
                     <th>Actions</th>
@@ -434,6 +437,9 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
             <tbody>
                 @forelse($$modelNameLowerCase as \$item)
                     <tr>
+                        <th scope='row'>
+                            <input type='checkbox' name='' id='' class='check' data-id='{{ \$item->id }}'>
+                        </th>
                         <td>{{ \$item->id }}</td>
                         $bodyStringHandler
                         <td>
@@ -665,6 +671,7 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                             use App\Models\{$modelName};
                                             use App\Http\Requests\Store{$modelName}Request;
                                             use App\Http\Requests\Update{$modelName}Request;
+                                            use Illuminate\Http\Request;
 
                                             class {$modelName}Controller extends Controller {
                                                 /**
@@ -748,7 +755,7 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                 public function bulkDelete(Request \$request) {
 
                                                     foreach (\$request->ids as \$value) {
-                                                        \$deletable = Logs::find(\$value);
+                                                        \$deletable = {$modelName}::find(\$value);
                                                         \$deletable->delete();
                                                     }
                                                     return response()->json("Deleted");
