@@ -400,6 +400,61 @@ $textToAppend = "
         return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase', 'search'));
     });
 
+    // $modelName Paginate
+    Route::get('/$modelNameLowerCase-paginate', function (Request \$request) {
+        // Retrieve the 'paginate' parameter from the URL (e.g., ?paginate=10)
+        \$paginate = \$request->input('paginate', 10); // Default to 10 if no paginate value is provided
+    
+        // Paginate the $modelNameLowerCase based on the 'paginate' value
+        \$$modelNameLowerCase = $modelName::paginate(\$paginate); // Paginate with the specified number of items per page
+    
+        // Return the view with the paginated $modelNameLowerCase
+        return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase'));
+    });
+
+    // $modelName Filter
+    Route::get('/$modelNameLowerCase-filter', function (Request \$request) {
+        // Retrieve 'from' and 'to' dates from the URL
+        \$from = \$request->input('from');
+        \$to = \$request->input('to');
+    
+        // Default query for $modelNameLowerCase
+        \$query = $modelName::query();
+    
+        // Convert dates to Carbon instances for better comparison
+        \$fromDate = \$from ? Carbon::parse(\$from) : null;
+        \$toDate = \$to ? Carbon::parse(\$to) : null;
+    
+        // Check if both 'from' and 'to' dates are provided
+        if (\$from && \$to) {
+            // If 'from' and 'to' are the same day (today)
+            if (\$fromDate->isToday() && \$toDate->isToday()) {
+                // Return results from today and include the 'from' date's data
+                $$modelNameLowerCase = \$query->whereDate('created_at', '=', Carbon::today())
+                               ->orderBy('created_at', 'desc')
+                               ->paginate(10);
+            } else {
+                // If 'from' date is greater than 'to' date, order ascending (from 'to' to 'from')
+                if (\$fromDate->gt(\$toDate)) {
+                    $$modelNameLowerCase = \$query->whereBetween('created_at', [\$toDate, \$fromDate])
+                                   ->orderBy('created_at', 'asc')  // Ascending order
+                                   ->paginate(10);
+                } else {
+                    // Otherwise, order descending (from 'from' to 'to')
+                    $$modelNameLowerCase = \$query->whereBetween('created_at', [\$fromDate, \$toDate])
+                                   ->orderBy('created_at', 'desc')  // Descending order
+                                   ->paginate(10);
+                }
+            }
+        } else {
+            // If 'from' or 'to' are missing, show all $modelNameLowerCase without filtering
+            $$modelNameLowerCase = \$query->paginate(10);  // Paginate results
+        }
+    
+        // Return the view with $modelNameLowerCase and the selected date range
+        return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase', 'from', 'to'));
+    });
+
     // end...";
                                             // Function to append after the last `// end...`
                                             function appendAfterLastEnd($filePath, $pattern, $data) {
@@ -457,63 +512,103 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
         </div>
         <div class='col-lg-6 col-md-6 col-sm-12' style='text-align: right;'>
             <a href='{{ route('$modelNameLowerCase.create') }}'>
-                <button class='btn btn-success' style='font-size: 12px;'><i class='fas fa-plus'></i> Add $modelName</button>
+                <button class='btn btn-success'><i class='fas fa-plus'></i> Add $modelName</button>
             </a>
         </div>
     </div>
-    <!-- Search Form -->
-    <form action='{{ url('/$modelNameLowerCase-search') }}' method='GET' class='mb-4 mt-2'>
-        <div class='input-group'>
-            <input type='text' name='search' value='{{ request()->get('search') }}' class='form-control' placeholder='Search...'>
-            <div class='input-group-append'>
-                <button class='btn btn-success' type='submit'><i class='fa fa-search'></i></button>
+    
+    <div class='card'>
+        <div class='card-body'>
+            <div class='row'>
+                <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
+                    <div class='row'>
+                        <div class='col-4'>
+                            <button type='button' class='btn btn-outline-secondary dropdown-toggle' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+                                Action
+                            </button>
+                            <div class='dropdown-menu'>
+                                <a class='dropdown-item bulk-delete' href='#'>
+                                    <i class='fa fa-trash'></i> Delete
+                                </a>
+                            </div>
+                        </div>
+                        <div class='col-8'>
+                            <form action='{{ url('/$modelNameLowerCase-paginate') }}' method='get'>
+                                <div class='input-group'>
+                                    <input type='number' name='paginate' class='form-control' placeholder='Paginate' value='{{ request()->get('paginate', 10) }}'>
+                                    <div class='input-group-append'>
+                                        <button class='btn btn-success' type='submit'><i class='fa fa-bars'></i></button>
+                                    </div>
+                                </div>
+                                @csrf
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
+                    <form action='{{ url('/$modelNameLowerCase-filter') }}' method='get'>
+                        <div class='input-group'>
+                            <input type='date' class='form-control' id='from' name='from' required> 
+                            <b class='pt-2'>- to -</b>
+                            <input type='date' class='form-control' id='to' name='to' required>
+                            <div class='input-group-append'>
+                                <button type='submit' class='btn btn-primary form-control'><i class='fas fa-filter'></i></button>
+                            </div>
+                        </div>
+                        @csrf
+                    </form>
+                </div>
+                <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
+                    <!-- Search Form -->
+                    <form action='{{ url('/$modelNameLowerCase-search') }}' method='GET'>
+                        <div class='input-group'>
+                            <input type='text' name='search' value='{{ request()->get('search') }}' class='form-control' placeholder='Search...'>
+                            <div class='input-group-append'>
+                                <button class='btn btn-success' type='submit'><i class='fa fa-search'></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class='table-responsive'>
+                <table class='table table-striped'>
+                    <thead>
+                        <tr>
+                            <th scope='col'>
+                            <input type='checkbox' name='' id='' class='checkAll'>
+                            </th>
+                            <th>#</th>
+                            $headlinesStringHandler
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse($$modelNameLowerCase as \$item)
+                            <tr>
+                                <th scope='row'>
+                                    <input type='checkbox' name='' id='' class='check' data-id='{{ \$item->id }}'>
+                                </th>
+                                <td>{{ \$item->id }}</td>
+                                $bodyStringHandler
+                                <td>
+                                    <a href='{{ route('$modelNameLowerCase.show', \$item->id) }}'><i class='fas fa-eye text-success'></i></a>
+                                    <a href='{{ route('$modelNameLowerCase.edit', \$item->id) }}'><i class='fas fa-edit text-info'></i></a>
+                                    <a href='{{ route('$modelNameLowerCase.delete', \$item->id) }}'><i class='fas fa-trash text-danger'></i></a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td>No Record...</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
-    </form>
-
-    <button type='button' class='btn btn-outline-secondary dropdown-toggle' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
-        Bulk Action
-    </button>
-    <div class='dropdown-menu'>
-        <a class='dropdown-item bulk-delete' href='#'>
-            <i class='fa fa-trash'></i> Delete
-        </a>
     </div>
 
-    <div class='table-responsive'>
-        <table class='table table-striped'>
-            <thead>
-                <tr>
-                    <th scope='col'>
-                      <input type='checkbox' name='' id='' class='checkAll'>
-                    </th>
-                    <th>#</th>
-                    $headlinesStringHandler
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($$modelNameLowerCase as \$item)
-                    <tr>
-                        <th scope='row'>
-                            <input type='checkbox' name='' id='' class='check' data-id='{{ \$item->id }}'>
-                        </th>
-                        <td>{{ \$item->id }}</td>
-                        $bodyStringHandler
-                        <td>
-                            <a href='{{ route('$modelNameLowerCase.show', \$item->id) }}'><i class='fas fa-eye text-success'></i></a>
-                            <a href='{{ route('$modelNameLowerCase.edit', \$item->id) }}'><i class='fas fa-edit text-info'></i></a>
-                            <a href='{{ route('$modelNameLowerCase.delete', \$item->id) }}'><i class='fas fa-trash text-danger'></i></a>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td>No Record...</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
     {{ $".$modelNameLowerCase."->links('pagination::bootstrap-5') }}
 
     <script src='{{ url('assets/jquery/jquery.min.js') }}'></script>
@@ -660,13 +755,15 @@ file_put_contents(resource_path("views/$modelNameLowerCase/show-$modelNameLowerC
 
 @section('content')
     <h1>$modelName Details</h1>
-    <table class='table'>
-        <tr>
-            <th>ID</th>
-            <td>{{ \$item->id }}</td>
-        </tr>
-        $showDataHandler
-    </table>
+    <div class='table-responsive'>
+        <table class='table'>
+            <tr>
+                <th>ID</th>
+                <td>{{ \$item->id }}</td>
+            </tr>
+            $showDataHandler
+        </table>
+    </div>
 
     <a href='{{ route('$modelNameLowerCase.index') }}' class='btn btn-primary'>Back to List</a>
 @endsection

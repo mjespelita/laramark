@@ -1,7 +1,7 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f4f7fc;
+    background-color: #ececec;
 }
 
 .btn-success, .btn-info, .btn-primary {
@@ -99,11 +99,6 @@ body {
 
 .card .card-body {
     padding: 25px;
-}
-
-.card:hover {
-    transform: scale(1.02);
-    transition: transform 0.3s;
 }
 
 .card-title {
