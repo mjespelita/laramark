@@ -341,36 +341,61 @@ $this->info("SUCCESS: Template layouts/main.blade.php created.\n");
                                             $filePath = 'routes/web.php';
                                             $modelNameLowerCase = strtolower($modelName);
 
-                                            $textToAppend = "
-Route::get('/{$modelNameLowerCase}', [{$modelName}Controller::class, 'index'])->name('{$modelNameLowerCase}.index');
-Route::get('/create-{$modelNameLowerCase}', [{$modelName}Controller::class, 'create'])->name('{$modelNameLowerCase}.create');
-Route::get('/edit-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'edit'])->name('{$modelNameLowerCase}.edit');
-Route::get('/show-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'show'])->name('{$modelNameLowerCase}.show');
-Route::get('/delete-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'delete'])->name('{$modelNameLowerCase}.delete');
-Route::get('/destroy-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'destroy'])->name('{$modelNameLowerCase}.destroy');
-Route::post('/store-{$modelNameLowerCase}', [{$modelName}Controller::class, 'store'])->name('{$modelNameLowerCase}.store');
-Route::post('/update-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'update'])->name('{$modelNameLowerCase}.update');
-Route::post('/delete-all-bulk-data', [{$modelName}Controller::class, 'bulkDelete']);
+                                            // The routes to be appended
+$textToAppend = "
 
-// $modelName Search
-Route::get('/$modelNameLowerCase-search', function (Request \$request) {
-    \$search = \$request->get('search');
+    Route::get('/{$modelNameLowerCase}', [{$modelName}Controller::class, 'index'])->name('{$modelNameLowerCase}.index');
+    Route::get('/create-{$modelNameLowerCase}', [{$modelName}Controller::class, 'create'])->name('{$modelNameLowerCase}.create');
+    Route::get('/edit-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'edit'])->name('{$modelNameLowerCase}.edit');
+    Route::get('/show-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'show'])->name('{$modelNameLowerCase}.show');
+    Route::get('/delete-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'delete'])->name('{$modelNameLowerCase}.delete');
+    Route::get('/destroy-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'destroy'])->name('{$modelNameLowerCase}.destroy');
+    Route::post('/store-{$modelNameLowerCase}', [{$modelName}Controller::class, 'store'])->name('{$modelNameLowerCase}.store');
+    Route::post('/update-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'update'])->name('{$modelNameLowerCase}.update');
+    Route::post('/delete-all-bulk-data', [{$modelName}Controller::class, 'bulkDelete']);
 
-    // Perform the search logic
-    $$modelNameLowerCase = $modelName::when(\$search, function (\$query) use (\$search) {
-        return \$query->where('name', 'like', \"%\$search%\");
-    })->paginate(10);
+    // $modelName Search
+    Route::get('/$modelNameLowerCase-search', function (Request \$request) {
+        \$search = \$request->get('search');
 
-    return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase', 'search'));
-});
-";
+        // Perform the search logic
+        $$modelNameLowerCase = $modelName::when(\$search, function (\$query) use (\$search) {
+            return \$query->where('name', 'like', \"%\$search%\");
+        })->paginate(10);
 
-                                            // Append the text to the file
-                                            if (file_put_contents($filePath, $textToAppend, FILE_APPEND) !== false) {
+        return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase', 'search'));
+    });
+
+    // end...";
+
+                                            // Function to append after the last `// end...`
+                                            function appendAfterLastEnd($filePath, $pattern, $data) {
+                                                // Get the current content of the file
+                                                $content = file_get_contents($filePath);
+
+                                                // Find the position of the last occurrence of the pattern
+                                                $position = strrpos($content, $pattern);
+
+                                                if ($position !== false) {
+                                                    // Move position to just after the pattern
+                                                    $position += strlen($pattern);
+                                                    // Append the data after the last occurrence of the pattern
+                                                    $newContent = substr($content, 0, $position) . $data . substr($content, $position);
+
+                                                    // Write the modified content back to the file
+                                                    return file_put_contents($filePath, $newContent) !== false;
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+
+                                            // Append the routes after the last occurrence of `// end...` or at the end if not found
+                                            if (appendAfterLastEnd($filePath, '// end...', $textToAppend)) {
                                                 $this->info("SUCCESS: Routes successfully appended to web.php.\n");
                                             } else {
                                                 echo "Failed to append routes to web.php.\n";
                                             }
+
 
                                             // GENERATE VIEWS
 

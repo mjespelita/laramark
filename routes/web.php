@@ -40,4 +40,6 @@ Route::middleware([
         return view('logs.logs', compact('logs', 'search'));
     });
 
+    // end...
+
 });
