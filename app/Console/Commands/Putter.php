@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 
 class Putter extends Command
 {
@@ -341,6 +340,41 @@ $this->info("SUCCESS: Template layouts/main.blade.php created.\n");
                                             $filePath = 'routes/web.php';
                                             $modelNameLowerCase = strtolower($modelName);
 
+                                            // Function to append after the last `// end of import`
+                                            function appendAfterLastEndOfImport($filePath, $pattern, $data) {
+                                                // Get the current content of the file
+                                                $content = file_get_contents($filePath);
+
+                                                // Find the position of the last occurrence of the pattern
+                                                $position = strrpos($content, $pattern);
+
+                                                if ($position !== false) {
+                                                    // Move position to just after the pattern
+                                                    $position += strlen($pattern);
+                                                    // Append the data after the last occurrence of the pattern
+                                                    $newContent = substr($content, 0, $position) . $data . substr($content, $position);
+
+                                                    // Write the modified content back to the file
+                                                    return file_put_contents($filePath, $newContent) !== false;
+                                                } else {
+                                                    return false;
+                                                }
+                                            }
+
+$importedControllerClassesAndModels = "
+
+use App\Http\Controllers\\".$modelName."Controller;
+use App\Models\\".$modelName.";
+
+// end of import
+";
+
+                                            if (appendAfterLastEndOfImport($filePath, '// end of import', $importedControllerClassesAndModels)) {
+                                                $this->info("Classes imported\n");
+                                            } else {
+                                                echo "Failed to append routes to web.php.\n";
+                                            }
+
                                             // The routes to be appended
 $textToAppend = "
 
@@ -367,7 +401,6 @@ $textToAppend = "
     });
 
     // end...";
-
                                             // Function to append after the last `// end...`
                                             function appendAfterLastEnd($filePath, $pattern, $data) {
                                                 // Get the current content of the file

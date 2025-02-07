@@ -5,6 +5,8 @@ use App\Models\Logs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// end of import
+
 Route::get('/', function () {
     return view('welcome');
 });
