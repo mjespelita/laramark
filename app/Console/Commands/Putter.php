@@ -671,11 +671,16 @@ file_put_contents(resource_path("views/$modelNameLowerCase/create-$modelNameLowe
 @section('content')
     <h1>Create a new $modelNameLowerCase</h1>
 
-    <form action='{{ route('$modelNameLowerCase.store') }}' method='POST'>
-        @csrf
-        $formDataHandler
-        <button type='submit' class='btn btn-primary mt-3'>Create</button>
-    </form>
+    <div class='card'>
+        <div class='card-body'>
+            <form action='{{ route('$modelNameLowerCase.store') }}' method='POST'>
+                @csrf
+                $formDataHandler
+                <button type='submit' class='btn btn-primary mt-3'>Create</button>
+            </form>
+        </div>
+    </div>
+
 @endsection
 ");
 $this->info("SUCCESS: View $modelNameLowerCase/create-$modelNameLowerCase.blade.php created.\n");
@@ -704,11 +709,16 @@ file_put_contents(resource_path("views/$modelNameLowerCase/edit-$modelNameLowerC
 @section('content')
     <h1>Edit $modelName</h1>
 
-    <form action='{{ route('$modelNameLowerCase.update', \$item->id) }}' method='POST'>
-        @csrf
-        $formDataHandler
-        <button type='submit' class='btn btn-primary mt-3'>Update</button>
-    </form>
+    <div class='card'>
+        <div class='card-body'>
+            <form action='{{ route('$modelNameLowerCase.update', \$item->id) }}' method='POST'>
+                @csrf
+                $formDataHandler
+                <button type='submit' class='btn btn-primary mt-3'>Update</button>
+            </form>
+        </div>
+    </div>
+
 @endsection
 ");
 $this->info("SUCCESS: View $modelNameLowerCase/edit-$modelNameLowerCase.blade.php created.\n");
@@ -755,14 +765,27 @@ file_put_contents(resource_path("views/$modelNameLowerCase/show-$modelNameLowerC
 
 @section('content')
     <h1>$modelName Details</h1>
-    <div class='table-responsive'>
-        <table class='table'>
-            <tr>
-                <th>ID</th>
-                <td>{{ \$item->id }}</td>
-            </tr>
-            $showDataHandler
-        </table>
+
+    <div class='card'>
+        <div class='card-body'>
+            <div class='table-responsive'>
+                <table class='table'>
+                    <tr>
+                        <th>ID</th>
+                        <td>{{ \$item->id }}</td>
+                    </tr>
+                    $showDataHandler
+                    <tr>
+                        <th>Created At</th>
+                        <td>{{ Smark\Smark\Dater::humanReadableDateWithDayAndTime(\$item->created_at) }}</td>
+                    </tr>
+                    <tr>
+                        <th>Updated At</th>
+                        <td>{{ Smark\Smark\Dater::humanReadableDateWithDayAndTime(\$item->updated_at) }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 
     <a href='{{ route('$modelNameLowerCase.index') }}' class='btn btn-primary'>Back to List</a>
@@ -823,10 +846,11 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
 
                                             namespace App\Http\Controllers;
 
-                                            use App\Models\{$modelName};
+                                            use App\Models\{Logs, $modelName};
                                             use App\Http\Requests\Store{$modelName}Request;
                                             use App\Http\Requests\Update{$modelName}Request;
                                             use Illuminate\Http\Request;
+                                            use Illuminate\Support\Facades\Auth;
 
                                             class {$modelName}Controller extends Controller {
                                                 /**
@@ -853,6 +877,10 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                 public function store(Store{$modelName}Request \$request)
                                                 {
                                                     {$modelName}::create({$encodedControllerDataHandler});
+
+                                                    /* Log ************************************************** */
+                                                    // Logs::create(['log' => Auth::user()->name.' created a new {$modelName} '.'"'.\$request->name.'"']);
+                                                    /******************************************************** */
 
                                                     return back()->with('success', '{$modelName} Added Successfully!');
                                                 }
@@ -882,6 +910,11 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                  */
                                                 public function update(Update{$modelName}Request \$request, {$modelName} \${$modelNameLowerCase}, \${$modelNameLowerCase}Id)
                                                 {
+                                                    /* Log ************************************************** */
+                                                    \$oldName = {$modelName}::where('id', \${$modelNameLowerCase}Id)->value('name');
+                                                    // Logs::create(['log' => Auth::user()->name.' updated a {$modelName} from "'.\$oldName.'" to "'.\$request->name.'".']);
+                                                    /******************************************************** */
+
                                                     {$modelName}::where('id', \${$modelNameLowerCase}Id)->update({$encodedControllerDataHandler});
 
                                                     return back()->with('success', '{$modelName} Updated Successfully!');
@@ -902,6 +935,12 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                  */
                                                 public function destroy({$modelName} \${$modelNameLowerCase}, \${$modelNameLowerCase}Id)
                                                 {
+
+                                                    /* Log ************************************************** */
+                                                    \$oldName = {$modelName}::where('id', \${$modelNameLowerCase}Id)->value('name');
+                                                    // Logs::create(['log' => Auth::user()->name.' deleted a {$modelName} "'.\$oldName.'".']);
+                                                    /******************************************************** */
+
                                                     {$modelName}::where('id', \${$modelNameLowerCase}Id)->delete();
 
                                                     return redirect('/{$modelNameLowerCase}');
@@ -910,6 +949,12 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                 public function bulkDelete(Request \$request) {
 
                                                     foreach (\$request->ids as \$value) {
+
+                                                        /* Log ************************************************** */
+                                                        \$oldName = {$modelName}::where('id', \$value)->value('name');
+                                                        // Logs::create(['log' => Auth::user()->name.' deleted a {$modelName} "'.\$oldName.'".']);
+                                                        /******************************************************** */
+
                                                         \$deletable = {$modelName}::find(\$value);
                                                         \$deletable->delete();
                                                     }

@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
 $table->string('log');
-$table->integer('users_id');
             $table->timestamps();
         });
     }
