@@ -391,9 +391,9 @@ $textToAppend = "
     Route::get('/destroy-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'destroy'])->name('{$modelNameLowerCase}.destroy');
     Route::post('/store-{$modelNameLowerCase}', [{$modelName}Controller::class, 'store'])->name('{$modelNameLowerCase}.store');
     Route::post('/update-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'update'])->name('{$modelNameLowerCase}.update');
-    Route::post('/delete-all-bulk-data', [{$modelName}Controller::class, 'bulkDelete']);
-    Route::post('/move-to-trash-all-bulk-data', [{$modelName}Controller::class, 'bulkMoveToTrash']);
-    Route::post('/restore-all-bulk-data', [{$modelName}Controller::class, 'bulkRestore']);
+    Route::post('/{$modelNameLowerCase}-delete-all-bulk-data', [{$modelName}Controller::class, 'bulkDelete']);
+    Route::post('/{$modelNameLowerCase}-move-to-trash-all-bulk-data', [{$modelName}Controller::class, 'bulkMoveToTrash']);
+    Route::post('/{$modelNameLowerCase}-restore-all-bulk-data', [{$modelName}Controller::class, 'bulkRestore']);
     Route::get('/trash-{$modelNameLowerCase}', [{$modelName}Controller::class, 'trash']);
     Route::get('/restore-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'restore'])->name('{$modelNameLowerCase}.restore');
 
@@ -641,7 +641,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
                     array.push($(this).attr('data-id'));
                 });
 
-                $.post('/delete-all-bulk-data', {
+                $.post('/{$modelNameLowerCase}-delete-all-bulk-data', {
                     ids: array,
                     _token: $(\"meta[name='csrf-token']\").attr('content')
                 }, function (res) {
@@ -655,7 +655,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
                     array.push($(this).attr('data-id'));
                 });
 
-                $.post('/move-to-trash-all-bulk-data', {
+                $.post('/{$modelNameLowerCase}-move-to-trash-all-bulk-data', {
                     ids: array,
                     _token: $(\"meta[name='csrf-token']\").attr('content')
                 }, function (res) {
@@ -809,7 +809,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/trash-$modelNameLower
                     array.push($(this).attr('data-id'));
                 });
 
-                $.post('/delete-all-bulk-data', {
+                $.post('/{$modelNameLowerCase}-delete-all-bulk-data', {
                     ids: array,
                     _token: $(\"meta[name='csrf-token']\").attr('content')
                 }, function (res) {
@@ -823,7 +823,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/trash-$modelNameLower
                     array.push($(this).attr('data-id'));
                 });
 
-                $.post('/restore-all-bulk-data', {
+                $.post('/{$modelNameLowerCase}-restore-all-bulk-data', {
                     ids: array,
                     _token: $(\"meta[name='csrf-token']\").attr('content')
                 }, function (res) {
