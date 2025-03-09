@@ -247,8 +247,10 @@ $this->info("SUCCESS: Template layouts/main.blade.php created.\n");
                                                 array_push($fillableColumns, $attribute['col']);
                                             }
 
-                                            $insertable = json_encode($fillableColumns);
+                                            // isTrash
+                                            array_push($fillableColumns, 'isTrash');
 
+                                            $insertable = json_encode($fillableColumns);
 
                                             $insertText = "\nprotected \$fillable = " . $insertable . ";";
 
@@ -274,6 +276,9 @@ $this->info("SUCCESS: Template layouts/main.blade.php created.\n");
                                                 $column = $attribute['col'];
                                                 $migrations .= "\n\$table->$dataType('$column');";
                                             }
+
+                                            // isTrash
+                                            $migrations .= "\n\$table->boolean('isTrash')->default(0);";
 
                                             putter($migrationPath[0], "\$table->id();", $migrations);
 
@@ -387,6 +392,10 @@ $textToAppend = "
     Route::post('/store-{$modelNameLowerCase}', [{$modelName}Controller::class, 'store'])->name('{$modelNameLowerCase}.store');
     Route::post('/update-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'update'])->name('{$modelNameLowerCase}.update');
     Route::post('/delete-all-bulk-data', [{$modelName}Controller::class, 'bulkDelete']);
+    Route::post('/move-to-trash-all-bulk-data', [{$modelName}Controller::class, 'bulkMoveToTrash']);
+    Route::post('/restore-all-bulk-data', [{$modelName}Controller::class, 'bulkRestore']);
+    Route::get('/trash-{$modelNameLowerCase}', [{$modelName}Controller::class, 'trash']);
+    Route::get('/restore-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'restore'])->name('{$modelNameLowerCase}.restore');
 
     // $modelName Search
     Route::get('/$modelNameLowerCase-search', function (Request \$request) {
@@ -511,9 +520,8 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
             <h1>All $modelName</h1>
         </div>
         <div class='col-lg-6 col-md-6 col-sm-12' style='text-align: right;'>
-            <a href='{{ route('$modelNameLowerCase.create') }}'>
-                <button class='btn btn-success'><i class='fas fa-plus'></i> Add $modelName</button>
-            </a>
+            <a href='{{ url('trash-$modelNameLowerCase') }}'><button class='btn btn-danger'><i class='fas fa-trash'></i> Trash <span class='text-warning'>{{ App\Models\\$modelName::where('isTrash', '1')->count() }}</span></button></a>
+            <a href='{{ route('$modelNameLowerCase.create') }}'><button class='btn btn-success'><i class='fas fa-plus'></i> Add $modelName</button></a>
         </div>
     </div>
     
@@ -527,8 +535,11 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
                                 Action
                             </button>
                             <div class='dropdown-menu'>
+                                <a class='dropdown-item bulk-move-to-trash' href='#'>
+                                    <i class='fa fa-trash'></i> Move to Trash
+                                </a>
                                 <a class='dropdown-item bulk-delete' href='#'>
-                                    <i class='fa fa-trash'></i> Delete
+                                    <i class='fa fa-trash'></i> <span class='text-danger'>Delete Permanently</span> <br> <small>(this action cannot be undone)</small>
                                 </a>
                             </div>
                         </div>
@@ -630,12 +641,191 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
                     array.push($(this).attr('data-id'));
                 });
 
+                $.post('/delete-all-bulk-data', {
+                    ids: array,
+                    _token: $(\"meta[name='csrf-token']\").attr('content')
+                }, function (res) {
+                    window.location.reload();
+                })
+            })
 
-                console.log('asdasd')
+            $('.bulk-move-to-trash').click(function () {
+                let array = [];
+                $('.check:checked').each(function() {
+                    array.push($(this).attr('data-id'));
+                });
+
+                $.post('/move-to-trash-all-bulk-data', {
+                    ids: array,
+                    _token: $(\"meta[name='csrf-token']\").attr('content')
+                }, function (res) {
+                    window.location.reload();
+                })
+            })
+        });
+    </script>
+@endsection
+");
+$this->info("SUCCESS: View $modelNameLowerCase/$modelNameLowerCase.blade.php created.\n");
+
+// Create the trash (show a table/list)
+echo "Creating trash $modelNameLowerCase/trash-$modelNameLowerCase.blade.php...\n";
+shell_exec("php artisan make:view $modelNameLowerCase.trash-$modelNameLowerCase"); // index
+
+$headlinesStringHandler = '';
+$bodyStringHandler = '';
+
+// loop attributes
+foreach ($attributes as $attribute) {
+    $column = $attribute['col'];
+    $headlines = ucfirst($column);
+    $headlinesStringHandler .= '<th>'.$headlines.'</th>';
+    $bodyStringHandler .= '<td>{{ $item->'.$column.' }}</td>';
+}
+
+file_put_contents(resource_path("views/$modelNameLowerCase/trash-$modelNameLowerCase.blade.php"), "
+@extends('layouts.main')
+
+@section('content')
+    <div class='row'>
+        <div class='col-lg-6 col-md-6 col-sm-12'>
+            <h1>Trash $modelName</h1>
+        </div>
+        <div class='col-lg-6 col-md-6 col-sm-12' style='text-align: right;'>
+        </div>
+    </div>
+    
+    <div class='card'>
+        <div class='card-body'>
+            <div class='row'>
+                <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
+                    <div class='row'>
+                        <div class='col-4'>
+                            <button type='button' class='btn btn-outline-secondary dropdown-toggle' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+                                Action
+                            </button>
+                            <div class='dropdown-menu'>
+                                <a class='dropdown-item bulk-restore' href='#'>
+                                    <i class='fa fa-recycle'></i> Restore
+                                </a>
+                                <a class='dropdown-item bulk-delete' href='#'>
+                                    <i class='fa fa-trash'></i> <span class='text-danger'>Delete Permanently</span> <br> <small>(this action cannot be undone)</small>
+                                </a>
+                            </div>
+                        </div>
+                        <div class='col-8'>
+                            <form action='{{ url('/$modelNameLowerCase-paginate') }}' method='get'>
+                                <div class='input-group'>
+                                    <input type='number' name='paginate' class='form-control' placeholder='Paginate' value='{{ request()->get('paginate', 10) }}'>
+                                    <div class='input-group-append'>
+                                        <button class='btn btn-success' type='submit'><i class='fa fa-bars'></i></button>
+                                    </div>
+                                </div>
+                                @csrf
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
+                    <form action='{{ url('/$modelNameLowerCase-filter') }}' method='get'>
+                        <div class='input-group'>
+                            <input type='date' class='form-control' id='from' name='from' required> 
+                            <b class='pt-2'>- to -</b>
+                            <input type='date' class='form-control' id='to' name='to' required>
+                            <div class='input-group-append'>
+                                <button type='submit' class='btn btn-primary form-control'><i class='fas fa-filter'></i></button>
+                            </div>
+                        </div>
+                        @csrf
+                    </form>
+                </div>
+                <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
+                    <!-- Search Form -->
+                    <form action='{{ url('/$modelNameLowerCase-search') }}' method='GET'>
+                        <div class='input-group'>
+                            <input type='text' name='search' value='{{ request()->get('search') }}' class='form-control' placeholder='Search...'>
+                            <div class='input-group-append'>
+                                <button class='btn btn-success' type='submit'><i class='fa fa-search'></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class='table-responsive'>
+                <table class='table table-striped'>
+                    <thead>
+                        <tr>
+                            <th scope='col'>
+                            <input type='checkbox' name='' id='' class='checkAll'>
+                            </th>
+                            <th>#</th>
+                            $headlinesStringHandler
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse($$modelNameLowerCase as \$item)
+                            <tr>
+                                <th scope='row'>
+                                    <input type='checkbox' name='' id='' class='check' data-id='{{ \$item->id }}'>
+                                </th>
+                                <td>{{ \$item->id }}</td>
+                                $bodyStringHandler
+                                <td>
+                                    <a href='{{ route('$modelNameLowerCase.restore', \$item->id) }}'><i class='fas fa-recycle text-info'></i></a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td>No Record...</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {{ $".$modelNameLowerCase."->links('pagination::bootstrap-5') }}
+
+    <script src='{{ url('assets/jquery/jquery.min.js') }}'></script>
+    <script>
+        $(document).ready(function () {
+
+            // checkbox
+
+            var click = false;
+            $('.checkAll').on('click', function() {
+                $('.check').prop('checked', !click);
+                click = !click;
+                this.innerHTML = click ? 'Deselect' : 'Select';
+            });
+
+            $('.bulk-delete').click(function () {
+                let array = [];
+                $('.check:checked').each(function() {
+                    array.push($(this).attr('data-id'));
+                });
 
                 $.post('/delete-all-bulk-data', {
                     ids: array,
-                    _token: $('meta[name=\"csrf-token\"]').attr('content')
+                    _token: $(\"meta[name='csrf-token']\").attr('content')
+                }, function (res) {
+                    window.location.reload();
+                })
+            })
+
+            $('.bulk-restore').click(function () {
+                let array = [];
+                $('.check:checked').each(function() {
+                    array.push($(this).attr('data-id'));
+                });
+
+                $.post('/restore-all-bulk-data', {
+                    ids: array,
+                    _token: $(\"meta[name='csrf-token']\").attr('content')
                 }, function (res) {
                     console.log(res)
                     window.location.reload();
@@ -645,7 +835,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
     </script>
 @endsection
 ");
-$this->info("SUCCESS: View $modelNameLowerCase/$modelNameLowerCase.blade.php created.\n");
+$this->info("SUCCESS: Trash $modelNameLowerCase/trash-$modelNameLowerCase.blade.php created.\n");
 
 // Create the create view (form to create a new item)
 echo "Creating view $modelNameLowerCase/create-$modelNameLowerCase.blade.php...\n";
@@ -859,8 +1049,27 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                 public function index()
                                                 {
                                                     return view('{$modelNameLowerCase}.{$modelNameLowerCase}', [
-                                                        '{$modelNameLowerCase}' => {$modelName}::paginate(10)
+                                                        '{$modelNameLowerCase}' => {$modelName}::where('isTrash', '0')->paginate(10)
                                                     ]);
+                                                }
+
+                                                public function trash()
+                                                {
+                                                    return view('{$modelNameLowerCase}.trash-{$modelNameLowerCase}', [
+                                                        '{$modelNameLowerCase}' => {$modelName}::where('isTrash', '1')->paginate(10)
+                                                    ]);
+                                                }
+
+                                                public function restore(\${$modelNameLowerCase}Id)
+                                                {
+                                                    /* Log ************************************************** */
+                                                    \$oldName = {$modelName}::where('id', \${$modelNameLowerCase}Id)->value('name');
+                                                    // Logs::create(['log' => Auth::user()->name.' ('.Auth::user()->role.') restored a {$modelName} "'.\$oldName.'".']);
+                                                    /******************************************************** */
+
+                                                    {$modelName}::where('id', \${$modelNameLowerCase}Id)->update(['isTrash' => '0']);
+
+                                                    return redirect('/{$modelNameLowerCase}');
                                                 }
 
                                                 /**
@@ -941,7 +1150,7 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                     // Logs::create(['log' => Auth::user()->name.' deleted a {$modelName} "'.\$oldName.'".']);
                                                     /******************************************************** */
 
-                                                    {$modelName}::where('id', \${$modelNameLowerCase}Id)->delete();
+                                                    {$modelName}::where('id', \${$modelNameLowerCase}Id)->update(['isTrash' => '1']);
 
                                                     return redirect('/{$modelNameLowerCase}');
                                                 }
@@ -959,6 +1168,36 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                         \$deletable->delete();
                                                     }
                                                     return response()->json("Deleted");
+                                                }
+
+                                                public function bulkMoveToTrash(Request \$request) {
+
+                                                    foreach (\$request->ids as \$value) {
+
+                                                        /* Log ************************************************** */
+                                                        \$oldName = {$modelName}::where('id', \$value)->value('name');
+                                                        // Logs::create(['log' => Auth::user()->name.' ('.Auth::user()->role.') deleted a {$modelName} "'.\$oldName.'".']);
+                                                        /******************************************************** */
+
+                                                        \$deletable = {$modelName}::find(\$value);
+                                                        \$deletable->update(['isTrash' => '1']);
+                                                    }
+                                                    return response()->json("Deleted");
+                                                }
+
+                                                public function bulkRestore(Request \$request)
+                                                {
+                                                    foreach (\$request->ids as \$value) {
+
+                                                        /* Log ************************************************** */
+                                                        \$oldName = {$modelName}::where('id', \$value)->value('name');
+                                                        Logs::create(['log' => Auth::user()->name.' ('.Auth::user()->role.') restored a {$modelName} "'.\$oldName.'".']);
+                                                        /******************************************************** */
+
+                                                        \$restorable = {$modelName}::find(\$value);
+                                                        \$restorable->update(['isTrash' => '0']);
+                                                    }
+                                                    return response()->json("Restored");
                                                 }
                                             }
                                             PHP;
