@@ -427,37 +427,26 @@ $textToAppend = "
         \$from = \$request->input('from');
         \$to = \$request->input('to');
     
+        // Retrieve 'from' and 'to' dates from the URL
+        \$from = \$request->input('from');
+        \$to = \$request->input('to');
+    
         // Default query for $modelNameLowerCase
         \$query = $modelName::query();
     
         // Convert dates to Carbon instances for better comparison
-        \$fromDate = \$from ? Carbon::parse(\$from) : null;
-        \$toDate = \$to ? Carbon::parse(\$to) : null;
+        \$fromDate = \$from ? Carbon::parse(\$from)->startOfDay() : null;
+        \$toDate = \$to ? Carbon::parse(\$to)->endOfDay() : null;
     
         // Check if both 'from' and 'to' dates are provided
-        if (\$from && \$to) {
-            // If 'from' and 'to' are the same day (today)
-            if (\$fromDate->isToday() && \$toDate->isToday()) {
-                // Return results from today and include the 'from' date's data
-                $$modelNameLowerCase = \$query->whereDate('created_at', '=', Carbon::today())
-                               ->orderBy('created_at', 'desc')
-                               ->paginate(10);
-            } else {
-                // If 'from' date is greater than 'to' date, order ascending (from 'to' to 'from')
-                if (\$fromDate->gt(\$toDate)) {
-                    $$modelNameLowerCase = \$query->whereBetween('created_at', [\$toDate, \$fromDate])
-                                   ->orderBy('created_at', 'asc')  // Ascending order
-                                   ->paginate(10);
-                } else {
-                    // Otherwise, order descending (from 'from' to 'to')
-                    $$modelNameLowerCase = \$query->whereBetween('created_at', [\$fromDate, \$toDate])
-                                   ->orderBy('created_at', 'desc')  // Descending order
-                                   ->paginate(10);
-                }
-            }
+        if (\$fromDate && \$toDate) {
+            // Ensure correct date filtering with full day range
+            \$$modelNameLowerCase = \$query->whereBetween('created_at', [\$fromDate, \$toDate])
+                           ->orderBy('created_at', 'desc')
+                           ->paginate(10);
         } else {
             // If 'from' or 'to' are missing, show all $modelNameLowerCase without filtering
-            $$modelNameLowerCase = \$query->paginate(10);  // Paginate results
+            \$$modelNameLowerCase = \$query->paginate(10);
         }
     
         // Return the view with $modelNameLowerCase and the selected date range
