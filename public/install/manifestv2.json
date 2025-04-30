@@ -4,7 +4,7 @@
     "description": "Lorem ipsum app manifest",
     "icons": [
         {
-            "src": "./logo/logo-96x96.png",
+            "src": "./logo/logo-95x95.png",
             "type": "image/png",
             "sizes": "95x95"
         },
@@ -15,7 +15,7 @@
         }
     ],
     "theme_color": "#fff",
-    "start_url": "http://127.0.0.1:8000",
+    "start_url": "http://127.0.0.1:4000",
     "display": "standalone",
     "background_color": "#fff",
     "orientation": "portrait"
