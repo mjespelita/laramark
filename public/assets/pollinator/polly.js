@@ -73,3 +73,21 @@ class PollingManager {
         this.poller.stop();  // Stop the polling process
     }
 }
+
+// usage
+
+// const polling = new PollingManager({
+//     url: `/api/(id optional)`, // API to fetch data
+//     delay: 5000, // Poll every 5 seconds
+//     failRetryCount: 3, // Retry on failure
+//     onSuccess: (res) => {
+//         console.log(res)
+//     },
+//     onError: (error) => {
+//         console.error("Error fetching data:", error);
+//         // Your custom error handling logic
+//     }
+// });
+
+// // Start polling
+// polling.start();
