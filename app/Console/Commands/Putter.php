@@ -217,6 +217,36 @@ $this->info("SUCCESS: Template layouts/main.blade.php created.\n");
                                                 }
                                             }
 
+                                            // for auditing
+
+                                            function modifyModelForAuditing($modelPath, $modelName) {
+                                                $content = file_get_contents($modelPath);
+
+                                                // 1. Add 'implements Auditable' to the class declaration
+                                                $content = preg_replace(
+                                                    'class '.$modelName.' extends Model',
+                                                    'class '.$modelName.' extends Model implements Auditable',
+                                                    $content
+                                                );
+
+                                                // 2. Add the use statement if not already present
+                                                if (strpos($content, 'use OwenIt\\Auditing\\Contracts\\Auditable;') === false) {
+                                                    if (preg_match('/namespace\s+[^;]+;/', $content, $matches)) {
+                                                        $namespaceLine = $matches[0];
+                                                        $content = str_replace(
+                                                            $namespaceLine,
+                                                            $namespaceLine . "\n\nuse OwenIt\\Auditing\\Contracts\\Auditable;",
+                                                            $content
+                                                        );
+                                                    } else {
+                                                        // Fallback: Add at the top
+                                                        $content = "<?php\n\nuse OwenIt\\Auditing\\Contracts\\Auditable;\n\n" . ltrim($content, "<?php\n");
+                                                    }
+                                                }
+
+                                                file_put_contents($modelPath, $content);
+                                            }
+
                                             $modelName = $this->ask('Model Name');
                                             $attr = $this->ask('Table Attributes (in JSON format, e.g., [{"col": "column1", "validate": "required", "dataType": "string"}])');
 
@@ -252,9 +282,25 @@ $this->info("SUCCESS: Template layouts/main.blade.php created.\n");
 
                                             $insertable = json_encode($fillableColumns);
 
-                                            $insertText = "\nprotected \$fillable = " . $insertable . ";";
+                                            $insertText = "\n
+                                                protected \$fillable = " . $insertable . "; \n
+
+                                                use \OwenIt\Auditing\Auditable;
+
+                                                protected \$auditExclude = ['id'];
+
+                                                public function generateTags(): array
+                                                {
+                                                    return [
+                                                        'id:' . \$this->id,
+                                                    ];
+                                                }
+                                            ";
 
                                             putter($modelPath, '*/', $insertText);
+
+                                            // Add implements and use statement
+                                            modifyModelForAuditing($modelPath, $modelName);
 
                                             $this->info("SUCCESS: Model modified.\n");
 
@@ -413,10 +459,10 @@ $textToAppend = "
     Route::get('/$modelNameLowerCase-paginate', function (Request \$request) {
         // Retrieve the 'paginate' parameter from the URL (e.g., ?paginate=10)
         \$paginate = \$request->input('paginate', 10); // Default to 10 if no paginate value is provided
-    
+
         // Paginate the $modelNameLowerCase based on the 'paginate' value
         \$$modelNameLowerCase = $modelName::paginate(\$paginate); // Paginate with the specified number of items per page
-    
+
         // Return the view with the paginated $modelNameLowerCase
         return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase'));
     });
@@ -426,18 +472,18 @@ $textToAppend = "
         // Retrieve 'from' and 'to' dates from the URL
         \$from = \$request->input('from');
         \$to = \$request->input('to');
-    
+
         // Retrieve 'from' and 'to' dates from the URL
         \$from = \$request->input('from');
         \$to = \$request->input('to');
-    
+
         // Default query for $modelNameLowerCase
         \$query = $modelName::query();
-    
+
         // Convert dates to Carbon instances for better comparison
         \$fromDate = \$from ? Carbon::parse(\$from)->startOfDay() : null;
         \$toDate = \$to ? Carbon::parse(\$to)->endOfDay() : null;
-    
+
         // Check if both 'from' and 'to' dates are provided
         if (\$fromDate && \$toDate) {
             // Ensure correct date filtering with full day range
@@ -448,7 +494,7 @@ $textToAppend = "
             // If 'from' or 'to' are missing, show all $modelNameLowerCase without filtering
             \$$modelNameLowerCase = \$query->paginate(10);
         }
-    
+
         // Return the view with $modelNameLowerCase and the selected date range
         return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase', 'from', 'to'));
     });
@@ -513,7 +559,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
             <a href='{{ route('$modelNameLowerCase.create') }}'><button class='btn btn-success'><i class='fas fa-plus'></i> Add $modelName</button></a>
         </div>
     </div>
-    
+
     <div class='card'>
         <div class='card-body'>
             <div class='row'>
@@ -548,7 +594,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
                 <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
                     <form action='{{ url('/$modelNameLowerCase-filter') }}' method='get'>
                         <div class='input-group'>
-                            <input type='date' class='form-control' id='from' name='from' required> 
+                            <input type='date' class='form-control' id='from' name='from' required>
                             <b class='pt-2'>- to -</b>
                             <input type='date' class='form-control' id='to' name='to' required>
                             <div class='input-group-append'>
@@ -683,7 +729,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/trash-$modelNameLower
         <div class='col-lg-6 col-md-6 col-sm-12' style='text-align: right;'>
         </div>
     </div>
-    
+
     <div class='card'>
         <div class='card-body'>
             <div class='row'>
@@ -718,7 +764,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/trash-$modelNameLower
                 <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
                     <form action='{{ url('/$modelNameLowerCase-filter') }}' method='get'>
                         <div class='input-group'>
-                            <input type='date' class='form-control' id='from' name='from' required> 
+                            <input type='date' class='form-control' id='from' name='from' required>
                             <b class='pt-2'>- to -</b>
                             <input type='date' class='form-control' id='to' name='to' required>
                             <div class='input-group-append'>
@@ -1051,11 +1097,6 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
 
                                                 public function restore(\${$modelNameLowerCase}Id)
                                                 {
-                                                    /* Log ************************************************** */
-                                                    \$oldName = {$modelName}::where('id', \${$modelNameLowerCase}Id)->value('name');
-                                                    // Logs::create(['log' => Auth::user()->name.' ('.Auth::user()->role.') restored a {$modelName} "'.\$oldName.'".']);
-                                                    /******************************************************** */
-
                                                     {$modelName}::where('id', \${$modelNameLowerCase}Id)->update(['isTrash' => '0']);
 
                                                     return redirect('/{$modelNameLowerCase}');
@@ -1075,10 +1116,6 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                 public function store(Store{$modelName}Request \$request)
                                                 {
                                                     {$modelName}::create({$encodedControllerDataHandler});
-
-                                                    /* Log ************************************************** */
-                                                    // Logs::create(['log' => Auth::user()->name.' created a new {$modelName} '.'"'.\$request->name.'"']);
-                                                    /******************************************************** */
 
                                                     return back()->with('success', '{$modelName} Added Successfully!');
                                                 }
@@ -1108,10 +1145,6 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                  */
                                                 public function update(Update{$modelName}Request \$request, {$modelName} \${$modelNameLowerCase}, \${$modelNameLowerCase}Id)
                                                 {
-                                                    /* Log ************************************************** */
-                                                    \$oldName = {$modelName}::where('id', \${$modelNameLowerCase}Id)->value('name');
-                                                    // Logs::create(['log' => Auth::user()->name.' updated a {$modelName} from "'.\$oldName.'" to "'.\$request->name.'".']);
-                                                    /******************************************************** */
 
                                                     {$modelName}::where('id', \${$modelNameLowerCase}Id)->update({$encodedControllerDataHandler});
 
@@ -1134,11 +1167,6 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                 public function destroy({$modelName} \${$modelNameLowerCase}, \${$modelNameLowerCase}Id)
                                                 {
 
-                                                    /* Log ************************************************** */
-                                                    \$oldName = {$modelName}::where('id', \${$modelNameLowerCase}Id)->value('name');
-                                                    // Logs::create(['log' => Auth::user()->name.' deleted a {$modelName} "'.\$oldName.'".']);
-                                                    /******************************************************** */
-
                                                     {$modelName}::where('id', \${$modelNameLowerCase}Id)->update(['isTrash' => '1']);
 
                                                     return redirect('/{$modelNameLowerCase}');
@@ -1147,11 +1175,6 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                 public function bulkDelete(Request \$request) {
 
                                                     foreach (\$request->ids as \$value) {
-
-                                                        /* Log ************************************************** */
-                                                        \$oldName = {$modelName}::where('id', \$value)->value('name');
-                                                        // Logs::create(['log' => Auth::user()->name.' deleted a {$modelName} "'.\$oldName.'".']);
-                                                        /******************************************************** */
 
                                                         \$deletable = {$modelName}::find(\$value);
                                                         \$deletable->delete();
@@ -1163,11 +1186,6 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
 
                                                     foreach (\$request->ids as \$value) {
 
-                                                        /* Log ************************************************** */
-                                                        \$oldName = {$modelName}::where('id', \$value)->value('name');
-                                                        // Logs::create(['log' => Auth::user()->name.' ('.Auth::user()->role.') deleted a {$modelName} "'.\$oldName.'".']);
-                                                        /******************************************************** */
-
                                                         \$deletable = {$modelName}::find(\$value);
                                                         \$deletable->update(['isTrash' => '1']);
                                                     }
@@ -1177,11 +1195,6 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                 public function bulkRestore(Request \$request)
                                                 {
                                                     foreach (\$request->ids as \$value) {
-
-                                                        /* Log ************************************************** */
-                                                        \$oldName = {$modelName}::where('id', \$value)->value('name');
-                                                        Logs::create(['log' => Auth::user()->name.' ('.Auth::user()->role.') restored a {$modelName} "'.\$oldName.'".']);
-                                                        /******************************************************** */
 
                                                         \$restorable = {$modelName}::find(\$value);
                                                         \$restorable->update(['isTrash' => '0']);
