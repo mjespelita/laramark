@@ -54,6 +54,10 @@
             </a>
         @endforeach
 
+        <a href="release-notes.html">
+            <i class="fas fa-file-alt"></i> Release Notes
+        </a>
+
         <a href="{{ url('user/profile') }}">
             <i class="fas fa-user"></i> {{ Auth::user()->name }}
         </a>

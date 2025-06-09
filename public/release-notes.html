@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Release Notes | Application</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    .banner-img {
+      max-height: 100px;
+      object-fit: contain;
+    }
+    .developer-img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .sidebar a {
+      display: block;
+      padding: 0.5rem 1rem;
+      color: #000;
+      text-decoration: none;
+    }
+    .sidebar a:hover {
+      background-color: #e9ecef;
+    }
+    @media (min-width: 768px) {
+      .mobile-sidebar-toggle {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Banner -->
+  <header class="bg-success text-white text-center py-4">
+    <img src="assets/logo-name.png" alt="Release Notes" class="banner-img mb-2"/>
+    <h1 class="h2 fw-bold">Release Notes</h1>
+    <p class="lead mb-0">Application Name</p>
+  </header>
+
+  <!-- Sidebar Toggle Button (Mobile Only) -->
+  <div class="container mt-3 d-md-none text-end">
+    <button class="btn btn-outline-success mobile-sidebar-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse" aria-expanded="false" aria-controls="sidebarCollapse">
+      ☰ Versions
+    </button>
+  </div>
+
+  <!-- Layout with Sidebar -->
+  <div class="container">
+    <div class="row">
+
+      <div class="container my-5">
+    <div class="bg-white rounded-3 p-5 shadow-sm border border-light-subtle">
+
+        <!-- Header -->
+        <div class="mb-4">
+            <p class="text-muted mb-0">
+                <i class="fas fa-info-circle me-1"></i>
+                This is a release notes page where you can see the latest updates, feature improvements, and important changes made to the system.
+            </p>
+        </div>
+
+        <hr>
+
+        <!-- Release Content -->
+        <div class="pt-3">
+            <p class="mb-0">
+                <strong>Release Notes</strong> provide a detailed summary of changes, improvements, and bug fixes in a software. It help users stay informed about what’s new or different in each update.
+                <br><br>
+                This system follows <strong>Semantic Versioning</strong> (e.g., <code>1.2.3</code>), where:
+                <ul class="mt-2 mb-0">
+                    <li><code>1</code> (Major): Significant changes that may include breaking features</li>
+                    <li><code>2</code> (Minor): New features that are backward compatible</li>
+                    <li><code>3</code> (Patch): Bug fixes or small enhancements</li>
+                </ul>
+            </p>
+
+        </div>
+
+    </div>
+</div>
+
+
+      <!-- Collapsible Sidebar -->
+      <nav class="col-md-3 col-lg-2 collapse d-md-block bg-light sidebar py-4" id="sidebarCollapse">
+        <h5 class="px-3">Versions</h5>
+        <div id="version-links" class="px-2">
+          <!-- Dynamic version links go here -->
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="col-md-9 col-lg-10 py-4" id="release-notes-container">
+        <!-- Dynamic release notes will be injected here -->
+      </main>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center text-muted py-4">
+    <img src="./assets/developer.png" alt="Developer" class="developer-img mb-2" />
+    <div>© 2025 Mark Jason Espelita, IT Programmer</div>
+  </footer>
+
+  <!-- JavaScript to Fetch GitHub Releases -->
+  <script>
+    const container = $('#release-notes-container');
+    const versionLinks = $('#version-links');
+
+    $.get('https://api.github.com/repos/mjespelita/laramark/releases', function(data) {
+      data.forEach((release, index) => {
+        const id = `release-${index}`;
+        const authorName = release.author?.login || 'Unknown Author';
+        const authorAvatar = release.author?.avatar_url || '';
+        const releaseDate = new Date(release.published_at).toLocaleString();
+        const bodyItems = (release.body || '')
+          .split(/\r?\n/)
+          .filter(line => line.trim().startsWith('*'))
+          .map(line => line.replace(/^\*\s*/, ''));
+
+        versionLinks.append(`<a href="#${id}" class="version-link">Version ${release.tag_name}</a>`);
+
+        const releaseDateFormatted = new Date(release.published_at).toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+          timeZoneName: 'short' // Optional: shows timezone like GMT+X
+        });
+        const card = $(`
+          <div class="card mb-4 shadow-sm" id="${id}">
+            <div class="card-body">
+              <h3 class="card-title fw-bold">Version ${release.tag_name}</h3>
+              <h6 class="card-subtitle text-muted mb-2">
+                Release Date: ${releaseDateFormatted} |
+                <a href="${release.html_url}" target="_blank">${release.html_url}</a>
+              </h6>
+              <div class="d-flex align-items-center mb-3">
+                <span class="text-muted">Released by: Application Name - Developer Team</span>
+              </div>
+              <h5>${release.name}</h5>
+              <ul>
+                ${bodyItems.map(item => `<li>${item}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        `);
+// <div class="d-flex align-items-center mb-3">
+//                 <img src="${authorAvatar}" class="developer-img me-2" alt="Author"/>
+//                 <span class="text-muted">Released by: ${authorName}</span>
+//               </div>
+        container.append(card);
+      });
+    });
+
+    // Smooth scroll on version links
+    $(document).on('click', '.version-link', function(e) {
+      e.preventDefault();
+      const target = $($(this).attr('href'));
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top - 20
+        }, 500);
+
+        // Collapse sidebar on small screens
+        if (window.innerWidth < 768) {
+          const sidebar = bootstrap.Collapse.getInstance(document.getElementById('sidebarCollapse'));
+          if (sidebar) sidebar.hide();
+        }
+      }
+    });
+  </script>
+
+  <!-- Bootstrap JS (Required for collapse) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
