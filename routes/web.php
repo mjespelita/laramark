@@ -6,8 +6,6 @@ use Carbon\Carbon;
 
 // end of import
 
-use App\Http\Controllers\LogsController;
-use App\Models\Logs;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use OwenIt\Auditing\Models\Audit;
