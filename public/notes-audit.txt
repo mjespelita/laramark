@@ -1,39 +1,18 @@
 public function transformAudit(array $data): array
-{
-    $customOldValues = [];
-    $customNewValues = [];
+    {
+        // Handle 'new_values' user name transformation
+        if (isset($data['new_values']['users_id'])) {
+            $user = \App\Models\User::find($data['new_values']['users_id']);
+            $data['new_values']['user_name'] = optional($user)->name;
+            unset($data['new_values']['users_id']); // Hide the ID
+        }
 
-    // USER
-    if (isset($data['old_values']['user_id'])) {
-        $user = \App\Models\User::find($data['old_values']['user_id']);
-        $customOldValues['Assigned User'] = $user?->name ?? 'Unknown';
-    }
-    if (isset($data['new_values']['user_id'])) {
-        $user = \App\Models\User::find($data['new_values']['user_id']);
-        $customNewValues['Assigned User'] = $user?->name ?? 'Unknown';
-    }
+        // Handle 'old_values' user name transformation (for updates)
+        if (isset($data['old_values']['users_id'])) {
+            $user = \App\Models\User::find($data['old_values']['users_id']);
+            $data['old_values']['user_name'] = optional($user)->name;
+            unset($data['old_values']['users_id']); // Hide the ID
+        }
 
-    // STATUS
-    if (isset($data['old_values']['status_id'])) {
-        $status = \App\Models\Status::find($data['old_values']['status_id']);
-        $customOldValues['Status'] = $status?->label ?? 'Unknown';
+        return $data;
     }
-    if (isset($data['new_values']['status_id'])) {
-        $status = \App\Models\Status::find($data['new_values']['status_id']);
-        $customNewValues['Status'] = $status?->label ?? 'Unknown';
-    }
-
-    // TITLE (regular field, just rename key)
-    if (isset($data['old_values']['title'])) {
-        $customOldValues['Title'] = $data['old_values']['title'];
-    }
-    if (isset($data['new_values']['title'])) {
-        $customNewValues['Title'] = $data['new_values']['title'];
-    }
-
-    // Final overwrite
-    $data['old_values'] = $customOldValues;
-    $data['new_values'] = $customNewValues;
-
-    return $data;
-}
