@@ -1,15 +1,18 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.main')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <x-welcome />
+@section('content')
+    <h1>Dashboard</h1>
+    <b>Hello, {{ Auth::user()->name }} ({{ Auth::user()->role }})</b>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Sample Number</h5>
+                    <h1>
+                        <i class="fas fa-smile"></i> 322
+                    </h1>
+                </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection

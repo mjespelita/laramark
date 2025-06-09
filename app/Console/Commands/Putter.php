@@ -219,13 +219,13 @@ $this->info("SUCCESS: Template layouts/main.blade.php created.\n");
 
                                             // for auditing
 
-                                            function modifyModelForAuditing($modelPath, $modelName) {
+                                            function modifyModelForAuditing($modelPath) {
                                                 $content = file_get_contents($modelPath);
 
                                                 // 1. Add 'implements Auditable' to the class declaration
                                                 $content = preg_replace(
-                                                    'class '.$modelName.' extends Model',
-                                                    'class '.$modelName.' extends Model implements Auditable',
+                                                    '/class\s+(\w+)\s+extends\s+Model\b/',
+                                                    'class $1 extends Model implements Auditable',
                                                     $content
                                                 );
 
@@ -283,24 +283,24 @@ $this->info("SUCCESS: Template layouts/main.blade.php created.\n");
                                             $insertable = json_encode($fillableColumns);
 
                                             $insertText = "\n
-                                                protected \$fillable = " . $insertable . "; \n
+    protected \$fillable = " . $insertable . "; \n
 
-                                                use \OwenIt\Auditing\Auditable;
+    use \OwenIt\Auditing\Auditable;
 
-                                                protected \$auditExclude = ['id'];
+    protected \$auditExclude = ['id'];
 
-                                                public function generateTags(): array
-                                                {
-                                                    return [
-                                                        'id:' . \$this->id,
-                                                    ];
-                                                }
+    public function generateTags(): array
+    {
+        return [
+            'id:' . \$this->id,
+        ];
+    }
                                             ";
 
                                             putter($modelPath, '*/', $insertText);
 
                                             // Add implements and use statement
-                                            modifyModelForAuditing($modelPath, $modelName);
+                                            modifyModelForAuditing($modelPath);
 
                                             $this->info("SUCCESS: Model modified.\n");
 
@@ -1064,6 +1064,19 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                             $stripped = json_encode($controllerDataHandler);
                                             $encodedControllerDataHandler = str_replace('"', '', $stripped);
 
+                                            // for update with auditing
+
+                                            $controllerDataHandlerForLaravelAuditing = [];
+
+                                            // Generate individual assignment lines
+                                            foreach ($attributes as $attribute) {
+                                                $column = $attribute['col'];
+                                                $controllerDataHandlerForLaravelAuditing[] = "$$modelNameLowerCase->$column = \$request->$column;";
+                                            }
+
+                                            // Combine the lines into a single block of code
+                                            $encodedControllerDataHandlerForLaravelAuditing = implode("\n        ", $controllerDataHandlerForLaravelAuditing);
+
                                             // Example usage:
                                             $controllerPath = 'app/Http/Controllers/'.$modelName.'Controller.php'; // Path to your controller file
                                             $newCode = <<<PHP
@@ -1145,8 +1158,11 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                  */
                                                 public function update(Update{$modelName}Request \$request, {$modelName} \${$modelNameLowerCase}, \${$modelNameLowerCase}Id)
                                                 {
+                                                    \${$modelNameLowerCase} = {$modelName}::findOrFail(\${$modelNameLowerCase}Id);
 
-                                                    {$modelName}::where('id', \${$modelNameLowerCase}Id)->update({$encodedControllerDataHandler});
+                                                    {$encodedControllerDataHandlerForLaravelAuditing}
+
+                                                    \${$modelNameLowerCase}->save();
 
                                                     return back()->with('success', '{$modelName} Updated Successfully!');
                                                 }

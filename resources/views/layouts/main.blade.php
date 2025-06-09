@@ -24,9 +24,40 @@
             <div class='logo'>
                 <img src='{{ url('assets/logo.png') }}' alt='' width='100%'>
             </div>
-            <a href='{{ url('dashboard') }}' class='{{ request()->is('dashboard') ? 'active' : '' }}'><i class='fas fa-tachometer-alt'></i> Dashboard</a>
-            <a href='{{ url('logs') }}' class='{{ request()->is('logs', 'create-logs', 'show-logs/*', 'edit-logs/*', 'delete-logs/*', 'logs-search*') ? 'active' : '' }}'><i class='fas fa-bars'></i> Logs</a>
-            <a href='{{ url('user/profile') }}'><i class='fas fa-user'></i> {{ Auth::user()->name }}</a>
+
+            @php
+                $navLinks = [
+                    [
+                        'url' => 'dashboard',
+                        'icon' => 'fas fa-tachometer-alt',
+                        'label' => 'Dashboard',
+                        'active' => request()->is('dashboard'),
+                    ],
+                    [
+                        'url' => 'activity-logs',
+                        'icon' => 'fas fa-bars',
+                        'label' => 'Logs',
+                        'active' => request()->is('activity-logs', 'create-logs', 'show-logs/*', 'edit-logs/*', 'delete-logs/*', 'logs-search*'),
+                    ],
+                    // [
+                    //     'url' => 'todos',
+                    //     'icon' => 'fas fa-bars',
+                    //     'label' => 'Todos',
+                    //     'active' => request()->is('todos', 'create-todos', 'trash-todos', 'show-todos/*', 'edit-todos/*', 'delete-todos/*', 'todos-search*'),
+                    // ],
+                ];
+        @endphp
+
+        @foreach ($navLinks as $link)
+            <a href="{{ url($link['url']) }}" class="{{ $link['active'] ? 'active' : '' }}">
+                <i class="{{ $link['icon'] }}"></i> {{ $link['label'] }}
+            </a>
+        @endforeach
+
+        <a href="{{ url('user/profile') }}">
+            <i class="fas fa-user"></i> {{ Auth::user()->name }}
+        </a>
+
         </div>
 
         <!-- Top Navbar -->
