@@ -260,6 +260,26 @@ Route::middleware([
         ]);
     });
 
+    Route::post('/delete-chat', function (Request $request) {
+        $request->validate([
+            'chatId' => 'required'
+        ]);
+
+        Chatparticipants::where('chats_id', $request->chatId)->delete(); // delete chat participants
+        Messages::where('chats_id', $request->chatId)->delete(); // delete chat messages
+
+        foreach(Chatattachments::where('chats_id', $request->chatId)->get() as $file) {
+            unlink('storage/'.$file['path']); // delete individual files
+        }
+
+        Chatattachments::where('chats_id', $request->chatId)->delete();
+
+        Chats::where('id', $request->chatId)->delete();
+
+        return true;
+
+    });
+
     // END CHAT ROUTES
 
     Route::get('/dashboard', function () {

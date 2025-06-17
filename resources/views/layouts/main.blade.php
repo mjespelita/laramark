@@ -358,6 +358,7 @@
 
         <!-- jQuery CDN -->
         <script src="{{ url('assets/jquery/jquery.min.js') }}"></script>
+        <script src="{{ url('assets/sweetalert/sweetalert.min.js') }}"></script>
 
         <!-- Script should be AFTER x-side-chat -->
         <script>
@@ -393,7 +394,7 @@
                                 delay: 5000, // Poll every 5 seconds
                                 failRetryCount: 3, // Retry on failure
                                 onSuccess: (messageResponse) => {
-                                    // console.log(messageResponse);
+                                    console.log(messageResponse);
 
                                     const chatId = messageResponse.chatId;
                                     const chatboxSelector = `#chatbox-${chatId}`;
@@ -463,8 +464,10 @@
                                             <div class="chatbox" id="chatbox-${chatId}">
                                                 <div class="chatbox-header">
                                                     <span>${messageResponse.chat.name}</span>
+                                                    <button data-id="${chatId}" class="delete-chat" title="Delete Conversation"
+                                                            style="background:none;border:none;color:white;font-size:16px;"><i class="fa fa-trash"></i></button>
                                                     <button class="close-chat" title="Close"
-                                                            style="background:none;border:none;color:white;font-size:16px;">&times;</button>
+                                                            style="background:none;border:none;color:white;font-size:16px;"><i class="fa fa-times"></i></button>
                                                 </div>
 
                                                 <div class="chatbox-body">
@@ -619,6 +622,45 @@
                 // Delegate close event
                 $(document).on('click', '.close-chat', function () {
                     $(this).closest('.chatbox').remove();
+                });
+
+                // Delegate close event
+                $(document).on('click', '.delete-chat', function () {
+                    let chatId = $(this).attr('data-id');
+
+                    Swal.fire({
+                        title: "Do you want to delete this chat? It will be gone forever, and the other person might be confused.",
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: "Yes",
+                        denyButtonText: `Don't delete`
+                    }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+
+                            Swal.fire({
+                                title: 'Deleting...',
+                                text: '',
+                                showConfirmButton: false,
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                            });
+
+                            $.post('/delete-chat', {
+                                chatId: chatId,
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            }, function (res) {
+                                $("#chatbox-" + chatId).remove();
+                                Swal.fire("Deleted!", "", "success");
+                            }).fail(err => {
+                                $("#chatbox-" + chatId).remove();
+                                Swal.fire("Something went wrong!", "", "danger");
+                            })
+
+                        } else if (result.isDenied) {
+                            Swal.fire("Deletion cancelled", "", "info");
+                        }
+                    });
                 });
             });
         </script>

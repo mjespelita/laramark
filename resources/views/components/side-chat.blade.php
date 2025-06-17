@@ -193,8 +193,10 @@
                                         <div class="chatbox" id="chatbox-${chatId}">
                                             <div class="chatbox-header">
                                                 <span>${messageResponse.chat.name}</span>
+                                                <button data-id="${chatId}" class="delete-chat" title="Delete Conversation"
+                                                        style="background:none;border:none;color:white;font-size:16px;"><i class="fa fa-trash"></i></button>
                                                 <button class="close-chat" title="Close"
-                                                        style="background:none;border:none;color:white;font-size:16px;">&times;</button>
+                                                        style="background:none;border:none;color:white;font-size:16px;"><i class="fa fa-times"></i></button>
                                             </div>
 
                                             <div class="chatbox-body" id="chatbox-scrollable">
