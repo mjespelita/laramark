@@ -312,9 +312,13 @@
                     }
 
                     .chatbox {
-                        width: 100%;
-                        height: 100vh;
+                        width: 100vw;
+                        height: 90vh;
                         border-radius: 0;
+                    }
+
+                    #chatboxes-container {
+                        right: 0 !important;
                     }
 
                     #toggleButton {
@@ -347,13 +351,13 @@
 
         {{-- apex charts --}}
 
-        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script src="{{ url('assets/apexcharts/apexcharts.min.js') }}"></script>
 
         <!-- Bootstrap JS and dependencies -->
         <script src='{{ url('assets/bootstrap/bootstrap.bundle.min.js') }}'></script>
 
         <!-- jQuery CDN -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="{{ url('assets/jquery/jquery.min.js') }}"></script>
 
         <!-- Script should be AFTER x-side-chat -->
         <script>
@@ -628,7 +632,7 @@
             }
         </script>
 
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+        <script src="{{ url('assets/angular/angular.min.js') }}"></script>
 
         <script>
             (function() {
