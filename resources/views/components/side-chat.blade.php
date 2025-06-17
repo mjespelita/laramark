@@ -28,7 +28,7 @@
 
     <b style="display: block; margin-bottom: 0.5rem;">New Chat</b>
 
-    @foreach (App\Models\User::all() as $user)
+    @foreach (App\Models\User::whereNot('id', Auth::user()->id)->get() as $user)
         <div class="friend" data-id="{{ $user->id }}" data-name="{{ $user->name }}"
             style="display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #ddd; padding: 8px; margin-bottom: 8px; border-radius: 5px; cursor: pointer;">
         <img src="{{ $user->profile_photo_path ? url('storage/' . $user->profile_photo_path) : url('assets/profile_photo_placeholder.png') }}"
