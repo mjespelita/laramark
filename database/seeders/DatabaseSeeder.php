@@ -20,5 +20,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
             'role' => 'admin',
         ]);
+
+        User::factory()->create([
+            'name' => 'Mark Jason Espelita',
+            'email' => 'markjasonespelita@gmail.com',
+            'role' => 'admin',
+        ]);
     }
 }
