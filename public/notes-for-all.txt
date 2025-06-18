@@ -1,0 +1,43 @@
+CRON JOBS ------------------------------------------------------------------------------------------------------------
+
+* * * * *	/usr/bin/php /home/u856365670/domains/(domain)/public_html/artisan sched - for sched
+* * * * *	/usr/bin/php /home/u856365670/domains/(domain)/public_html/artisan file-cleanup - for file cleanup in chat
+
+Major Release --------------------------------------------------------------------------------------------------------
+
+(Determine if it has new php package)
+
+1. LOCAL: compress files except public folder, vendor folder, .htaccess and .env file.
+2. SERVER: activate the maintenance page.
+3. SERVER: export the existing database.
+4. LOCAL: create new version of database and import the database from the server.
+5. LOCAL: migrate the new tables, columns if any.
+6. LOCAL: add default values on new columns if any.
+7. SERVER: delete all files except public folder, .htaccess and .env file.
+8. SERVER: upload and export the compresed zip file.
+9. SERVER: delete all tables in the database
+10. SERVER: import the new database from the local.
+11. SERVER: deactivate the maintenance page.
+
+Laravel Auditing -----------------------------------------------------------------------------------------------------
+
+public function transformAudit(array $data): array
+{
+    // Handle 'new_values' user name transformation
+    if (isset($data['new_values']['users_id'])) {
+        $user = \App\Models\User::find($data['new_values']['users_id']);
+        $data['new_values']['user_name'] = optional($user)->name;
+        unset($data['new_values']['users_id']); // Hide the ID
+    }
+
+    // Handle 'old_values' user name transformation (for updates)
+    if (isset($data['old_values']['users_id'])) {
+        $user = \App\Models\User::find($data['old_values']['users_id']);
+        $data['old_values']['user_name'] = optional($user)->name;
+        unset($data['old_values']['users_id']); // Hide the ID
+    }
+
+    return $data;
+}
+
+Remaining ------------------------------------------------------------------------------------------------------------
