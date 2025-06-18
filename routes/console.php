@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Chatattachments;
+use App\Models\Chats;
+use App\Models\Messages;
 use Carbon\Carbon;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -10,7 +13,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
 
-// backup 
+// backup
 
 Artisan::command('backup', function () {
     $this->info('📦 Starting backup...');
@@ -103,7 +106,7 @@ Artisan::command('sched', function () {
 
     // Check if the time is exactly 8:00 AM
     if ($currentTime->format('H:i') == '08:00') {
-        
+
 
         $this->info('Running scheduled tasks at 8:00 AM...');
     } else {
@@ -111,3 +114,54 @@ Artisan::command('sched', function () {
     }
 
 })->purpose('Scheduled Tasks')->dailyAt('08:00'); // optional ->dailyAt('08:00') if not running on CRON
+
+Artisan::command('file-cleanup', function () {
+
+    $now = Carbon::now();
+    $deletedChatIds = [];
+
+    $fileAttachments = Chatattachments::all();
+
+    foreach ($fileAttachments as $fileAttachment) {
+        $created = Carbon::parse($fileAttachment->created_at);
+        $daysOld = $created->diffInDays($now);
+
+        $file = 'public/storage/' . $fileAttachment->path;
+
+        if (
+            $daysOld >= 31 &&
+            $fileAttachment->path != 'files/chat_uploads/file-placeholder.jpg' &&
+            file_exists($file)
+        ) {
+            unlink($file);
+            $this->info("Deleted: {$file}");
+
+            // Track which chat this belongs to
+            $deletedChatIds[] = $fileAttachment->chats_id;
+
+            // Update to placeholder
+            $fileAttachment->update([
+                'path' => 'files/chat_uploads/file-placeholder.jpg'
+            ]);
+        }
+    }
+
+    // Send a message only to chats that had deleted files
+    $uniqueChatIds = array_unique($deletedChatIds);
+
+    foreach ($uniqueChatIds as $chatId) {
+        $chat = Chats::find($chatId);
+
+        if ($chat) {
+            Messages::create([
+                'message' => "We're sorry to inform you that files shared in chat are automatically deleted after 30 days as part of our retention policy—please download important files before they expire. \n\n- System Administrator",
+                'chats_id' => $chat->id,
+                'chats_users_id' => $chat->users_id,
+                'users_id' => 0,
+                'has_attachments' => 0,
+            ]);
+        }
+    }
+
+    $this->info('File cleanup completed.');
+});

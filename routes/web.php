@@ -269,7 +269,9 @@ Route::middleware([
         Messages::where('chats_id', $request->chatId)->delete(); // delete chat messages
 
         foreach(Chatattachments::where('chats_id', $request->chatId)->get() as $file) {
-            unlink('storage/'.$file['path']); // delete individual files
+            if ($file['path'] != 'files/chat_uploads/file-placeholder.jpg') {
+                unlink('storage/'.$file['path']); // delete individual files
+            }
         }
 
         Chatattachments::where('chats_id', $request->chatId)->delete();
@@ -290,7 +292,9 @@ Route::middleware([
         ]); // delete chat messages
 
         foreach(Chatattachments::where('messages_id', $request->messageId)->get() as $file) {
-            unlink('storage/'.$file['path']); // delete individual files
+            if ($file['path'] != 'files/chat_uploads/file-placeholder.jpg') {
+                unlink('storage/'.$file['path']); // delete individual files
+            }
         }
 
         Chatattachments::where('messages_id', $request->messageId)->delete();

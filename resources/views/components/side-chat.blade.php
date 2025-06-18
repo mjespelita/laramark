@@ -163,9 +163,19 @@
                                             const fileUrl = `/storage/${file.path}`;
 
                                             if (isImage) {
-                                                attachmentsHtml += `<div class="chat-attachment"><a href="${fileUrl}"><img src="${fileUrl}" alt="${file.original_name}" style="max-width: 100%; margin-top: 5px; border-radius: 8px;"></a></div>`;
+                                                attachmentsHtml += `
+                                                    <div class="chat-attachment">
+                                                        <a href="${fileUrl}">
+                                                            <img src="${fileUrl}" alt="${file.original_name}" style="max-width: 100%; margin-top: 5px; border-radius: 8px;">
+                                                        </a>
+                                                    </div>`;
                                             } else {
-                                                attachmentsHtml += `<div class="chat-attachment"><a href="${fileUrl}" target="_blank">${file.original_name}</a></div>`;
+                                                attachmentsHtml += `
+                                                    <div class="chat-attachment">
+                                                        <a href="${fileUrl}" target="_blank">
+                                                            ${file.original_name}
+                                                        </a>
+                                                    </div>`;
                                             }
                                         });
                                     }
