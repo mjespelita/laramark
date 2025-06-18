@@ -449,7 +449,14 @@
                                                         ${formatMessage(msg.message)}
                                                         ${attachmentsHtml}
                                                     </div>
-                                                    <div class="timestamp">${timestamp}</div>
+
+                                                    <div class="timestamp">
+                                                        ${timestamp}
+                                                        ${(isMine && msg.message !== 'Unsent a message')
+                                                            ? `<i class="fa fa-trash unsent-chat text-danger" data-id="${msg.id}"></i>`
+                                                            : ''}
+                                                    </div>
+
                                                 </div>
                                             </div>
                                         `;
@@ -659,6 +666,45 @@
 
                         } else if (result.isDenied) {
                             Swal.fire("Deletion cancelled", "", "info");
+                        }
+                    });
+                });
+
+                // unsent chat
+
+                $(document).on('click', '.unsent-chat', function () {
+                    let messageId = $(this).attr('data-id');
+
+                    Swal.fire({
+                        title: "Do you want to unsent this message?",
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: "Yes",
+                        denyButtonText: `Don't delete`
+                    }).then((result) => {
+                        /* Read more about isConfirmed, isDenied below */
+                        if (result.isConfirmed) {
+
+                            Swal.fire({
+                                title: 'Unsending...',
+                                text: '',
+                                showConfirmButton: false,
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                            });
+
+                            $.post('/unsent-message', {
+                                messageId: messageId,
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            }, function (res) {
+                                Swal.fire("Unsent!", "", "success");
+                            }).fail(err => {
+                                $("#chatbox-" + chatId).remove();
+                                Swal.fire("Something went wrong!", "", "danger");
+                            })
+
+                        } else if (result.isDenied) {
+                            Swal.fire("Cancelled", "", "info");
                         }
                     });
                 });

@@ -178,7 +178,14 @@
                                                     ${formatMessage(msg.message)}
                                                     ${attachmentsHtml}
                                                 </div>
-                                                <div class="timestamp">${timestamp}</div>
+
+                                                <div class="timestamp">
+                                                    ${timestamp}
+                                                    ${(isMine && msg.message !== 'Unsent a message')
+                                                        ? `<i class="fa fa-trash unsent-chat text-danger" data-id="${msg.id}"></i>`
+                                                        : ''}
+                                                </div>
+
                                             </div>
                                         </div>
                                     `;

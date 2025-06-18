@@ -280,6 +280,25 @@ Route::middleware([
 
     });
 
+    Route::post('/unsent-message', function (Request $request) {
+        $request->validate([
+            'messageId' => 'required'
+        ]);
+
+        Messages::where('id', $request->messageId)->update([
+            'message' => 'Unsent a message'
+        ]); // delete chat messages
+
+        foreach(Chatattachments::where('messages_id', $request->messageId)->get() as $file) {
+            unlink('storage/'.$file['path']); // delete individual files
+        }
+
+        Chatattachments::where('messages_id', $request->messageId)->delete();
+
+        return true;
+
+    });
+
     // END CHAT ROUTES
 
     Route::get('/dashboard', function () {
