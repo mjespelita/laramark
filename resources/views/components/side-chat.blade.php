@@ -20,6 +20,10 @@
 
     <b style="display: block; margin-bottom: 0.5rem;">Recent Chats</b>
 
+    <div>
+        <input type="text" class="form-control mb-2 search-people-recent-chat" placeholder="Search People...">
+    </div>
+
     <div class="chat-history">
         <div class="spinner-border"></div>
     </div>
@@ -28,13 +32,17 @@
 
     <b style="display: block; margin-bottom: 0.5rem;">New Chat</b>
 
+    <div>
+        <input type="text" class="form-control mb-2 search-people-new-chat" placeholder="Search People...">
+    </div>
+
     @foreach (App\Models\User::whereNot('id', Auth::user()->id)->get() as $user)
         <div class="friend" data-id="{{ $user->id }}" data-name="{{ $user->name }}"
             style="display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #ddd; padding: 8px; margin-bottom: 8px; border-radius: 5px; cursor: pointer;">
-        <img src="{{ $user->profile_photo_path ? url('storage/' . $user->profile_photo_path) : url('assets/profile_photo_placeholder.png') }}"
-                alt="{{ $user->name }}"
-                style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
-        <span style="font-size: 14px;">{{ $user->name }}</span>
+            <img src="{{ $user->profile_photo_path ? url('storage/' . $user->profile_photo_path) : url('assets/profile_photo_placeholder.png') }}"
+                    alt="{{ $user->name }}"
+                    style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
+            <span style="font-size: 14px;">{{ $user->name }}</span>
         </div>
     @endforeach
 
@@ -43,6 +51,13 @@
     <script src="{{ url('assets/pollinator/polly.js') }}"></script>
     <script>
         $(document).ready(function () {
+
+            $(".search-people-new-chat").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $(".friend").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
 
             // Close sidebar on button click
             $('#closeSidebarBtn').on('click', function () {
@@ -86,6 +101,13 @@
                                 <span style="font-size: 14px;">${chat.receiver_name}</span> - ${italicPreview}
                             </div>
                         `);
+                    });
+
+                    $(".search-people-recent-chat").on("keyup", function() {
+                        var value = $(this).val().toLowerCase();
+                        $(".chat-history-user").filter(function() {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                        });
                     });
                 },
                 onError: (error) => {
