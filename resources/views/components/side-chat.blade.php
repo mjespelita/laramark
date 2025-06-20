@@ -243,12 +243,12 @@
                                                 <div id="latest-message"></div>
                                             </div>
 
-                                            <div class="preview-box" id="file-preview"></div>
+                                            <div class="preview-box" id="file-preview-${chatId}"></div>
 
                                             <div class="chatbox-footer">
                                                 <label class="file-icon">
                                                     <i class="fas fa-paperclip"></i>
-                                                    <input type="file" id="file-input" multiple style="display: none;">
+                                                    <input type="file" id="file-input-${chatId}" multiple style="display: none;">
                                                 </label>
 
                                                 <textarea class="chat-input" placeholder="Type a message…" rows="1"></textarea>
@@ -267,14 +267,14 @@
                                     let selectedFiles = [];
 
                                     // Handle file selection
-                                    $('#file-input').on('change', function (e) {
+                                    $('#file-input-' + chatId).on('change', function (e) {
                                         selectedFiles = Array.from(e.target.files);
                                         renderFilePreviews();
                                     });
 
                                     // Render file previews
                                     function renderFilePreviews() {
-                                        $('#file-preview').empty();
+                                        $('#file-preview-' + chatId).empty();
 
                                         selectedFiles.forEach((file, index) => {
                                             const isImage = file.type.startsWith('image/');
@@ -293,13 +293,13 @@
                                                 reader.onload = function (e) {
                                                     fileItem.append(`<img src="${e.target.result}" alt="${file.name}" style="max-width:80px;">`);
                                                     fileItem.append(`<span class="remove-file" style="position:absolute;top:0;right:0;background:#ff4444;color:#fff;border-radius:50%;width:18px;height:18px;line-height:18px;text-align:center;font-size:12px;cursor:pointer;">&times;</span>`);
-                                                    $('#file-preview').append(fileItem);
+                                                    $('#file-preview-' + chatId).append(fileItem);
                                                 };
                                                 reader.readAsDataURL(file);
                                             } else {
                                                 fileItem.append(`<div>${file.name}</div>`);
                                                 fileItem.append(`<span class="remove-file" style="margin-left:10px;color:red;cursor:pointer;">[Remove]</span>`);
-                                                $('#file-preview').append(fileItem);
+                                                $('#file-preview-' + chatId).append(fileItem);
                                             }
                                         });
                                     }
@@ -402,7 +402,7 @@
                                     // Clear input and preview
                                     function clearChatUI(chatId) {
                                         $(`#chatbox-${chatId} .chat-input`).val("");
-                                        $('#file-preview').empty();
+                                        $('#file-preview-' + chatId).empty();
                                         selectedFiles = [];
                                     }
 
