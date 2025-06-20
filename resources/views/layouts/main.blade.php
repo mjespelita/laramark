@@ -39,12 +39,12 @@
                         'label' => 'Logs',
                         'active' => request()->is('activity-logs', 'create-logs', 'show-logs/*', 'edit-logs/*', 'delete-logs/*', 'logs-search*'),
                     ],
-                    // [
-                    //     'url' => 'todos',
-                    //     'icon' => 'fas fa-bars',
-                    //     'label' => 'Todos',
-                    //     'active' => request()->is('todos', 'create-todos', 'trash-todos', 'show-todos/*', 'edit-todos/*', 'delete-todos/*', 'todos-search*'),
-                    // ],
+                    [
+                        'url' => 'users',
+                        'icon' => 'fas fa-bars',
+                        'label' => 'Users',
+                        'active' => request()->is('users', 'create-users', 'trash-users', 'show-users/*', 'edit-users/*', 'delete-users/*', 'users-search*'),
+                    ],
                 ];
         @endphp
 
