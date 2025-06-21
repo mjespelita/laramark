@@ -82,6 +82,7 @@
             <!-- Toggle Button -->
             <button id="toggleButton">
                 <i class="fas fa-user"></i>
+                <span id="chatCountBadge">0</span>
             </button>
 
             <!-- Dark background overlay -->
@@ -131,7 +132,6 @@
                     transform: translateY(-2px);
                 }
 
-                /* TOGGLE FAB */
                 #toggleButton {
                     position: fixed;
                     bottom: 6rem;
@@ -154,6 +154,19 @@
                 #toggleButton:hover {
                     transform: scale(1.1);
                     background: linear-gradient(135deg, #0072ce, #009bff);
+                }
+
+                #chatCountBadge {
+                    position: absolute;
+                    top: -4px;
+                    right: -4px;
+                    background-color: red;
+                    color: white;
+                    font-size: 20px;
+                    font-weight: bold;
+                    padding: 2px 5px;
+                    border-radius: 50%;
+                    line-height: 1;
                 }
 
                 /* OVERLAY */
@@ -367,6 +380,34 @@
                     $('#friendsSidebar').fadeToggle(200);
                     $('#overlay').fadeToggle(200);
                 });
+
+                // chat seen couter
+
+                $('#chatCountBadge').text(0);
+
+                const chatSeenCounterPolling = new PollingManager({
+                    url: `/chat-history`, // API to fetch data
+                    delay: 5000, // Poll every 5 seconds
+                    failRetryCount: 3, // Retry on failure
+                    onSuccess: (chats) => {
+
+                        let chatSeenCounter = 0;
+
+                        chats.forEach(chat => {
+                            chatSeenCounter += chat.seen ? 0 : 1;
+                        });
+
+                        chatSeenCounter == 0 ? $('#chatCountBadge').text(0) : $('#chatCountBadge').text(chatSeenCounter)
+                    },
+                    onError: (error) => {
+                        console.error("Error fetching data:", error);
+                    }
+                });
+
+                // Start polling
+                chatSeenCounterPolling.start();
+
+                // end chat seen counter
 
                 $('#overlay').click(function () {
                     $('#friendsSidebar').fadeOut(200);
