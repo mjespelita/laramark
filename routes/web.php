@@ -212,7 +212,7 @@ Route::middleware([
                 'receiver_id' => $receiver?->id,
                 'receiver_name' => $receiver?->name,
                 'receiver_profile_picture' => $receiver?->profile_photo_path,
-                'latest_message' => $latestMessage?->message,
+                'latest_message' => Smark\Smark\Stringer::truncateString($latestMessage?->message, 10),
                 'latest_message_at' => $latestMessage?->updated_at,
                 'seen' => $seen,
             ];
