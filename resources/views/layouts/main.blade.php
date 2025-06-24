@@ -606,6 +606,23 @@
                                             let usersId = auth_id;
                                             let hasAttachments = selectedFiles.length > 0 ? 1 : 0;
 
+                                            $(`#chatbox-${chatId} .chatbox-body`).append(`
+                                                <div class="chat-msg mine">
+                                                    <div class="msg-container" style="width: 100%">
+                                                        <div class="bubble d-flex align-items-center">
+                                                            <div class="spinner-border me-2" style="width: 10px; height: 10px;"></div>
+                                                            <span>Sending...</span>
+                                                        </div>
+                                                        <div class="timestamp">just now</div>
+                                                    </div>
+                                                    <div id="latest-message"></div>
+                                                </div>
+                                            `);
+
+                                            setTimeout(() => {
+                                                document.querySelector(`#chatbox-${chatId} #latest-message`)?.scrollIntoView({ behavior: 'smooth' });
+                                            }, 50);
+
                                             // First: send message
                                             $.post('/send-chat', {
                                                 'hasAttachments': hasAttachments,

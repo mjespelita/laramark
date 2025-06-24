@@ -71,7 +71,6 @@
                 failRetryCount: 3, // Retry on failure
                 onSuccess: (chats) => {
                     $('.chat-history').html("");
-                    console.log(chats)
 
                     chats.forEach(chat => {
                         const fontWeight = chat.seen ? 'normal' : 'bold';
@@ -383,10 +382,10 @@
 
                                         $(`#chatbox-${chatId} .chatbox-body`).append(`
                                             <div class="chat-msg mine">
-                                                <div class="msg-container">
-                                                    <div class="bubble">
-                                                        <div class="spinner-border" style="width: 10px; height: 10px;"></div>
-                                                        ${filePreviewHtml}
+                                                <div class="msg-container" style="width: 100%">
+                                                    <div class="bubble d-flex align-items-center">
+                                                        <div class="spinner-border me-2" style="width: 10px; height: 10px;"></div>
+                                                        <span>Sending...</span>
                                                     </div>
                                                     <div class="timestamp">just now</div>
                                                 </div>
