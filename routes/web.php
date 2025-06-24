@@ -309,6 +309,17 @@ Route::middleware([
 
     });
 
+    Route::post('/chat-files', function (Request $request) {
+        $request->validate([
+            'chatId' => 'required'
+        ]);
+
+        $chatFiles = Chatattachments::where('chats_id', $request->chatId)->get();
+
+        return response()->json($chatFiles);
+
+    });
+
     // END CHAT ROUTES
 
     Route::get('/dashboard', function () {

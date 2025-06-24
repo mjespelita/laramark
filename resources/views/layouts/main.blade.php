@@ -357,6 +357,29 @@
             <!-- Make sure this comes BEFORE the script -->
             <x-side-chat :chats="App\Models\Chats::all()" />
 
+            <!-- Chat Files Modal HTML -->
+            <div class="modal fade" id="chatFiles" tabindex="-1" aria-labelledby="chatFilesLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="chatFilesLabel">Files</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="chat-files" style=""></div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- End Chat Files Modal HTML -->
+
             <!-- Chatbox Container -->
             <div id="chatboxes-container" style="position: fixed; bottom: 0; right: 90px; display: flex; gap: 10px; z-index: 1200;"></div>
 
@@ -376,6 +399,67 @@
         <!-- Script should be AFTER x-side-chat -->
         <script>
             $(document).ready(function () {
+
+                $(document).on('click', '.show-chat-files', function () {
+                    let chatId = $(this).attr('data-id');
+                    $('.chat-files').css({
+                        display: 'block',
+                    });
+                    $('.chat-files').html(`
+                        <div style="display: flex; justify-content: center; align-items: center;">
+                            <div class="spinner-border"></div>
+                        </div>
+                    `);
+                    $.post('/chat-files', {
+                        chatId: chatId,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    }, function (res) {
+                        $('.chat-files').html("");
+                        $('.chat-files').css({
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '10px'
+                        });
+
+                        if (res.length === 0) {
+                            $('.chat-files').css({
+                                display: 'block',
+                            });
+                            $('.chat-files').html(`
+                                <div style="display: flex; justify-content: center; align-items: center;">
+                                    <i>No Files</i>
+                                </div>
+                            `);
+                        }
+
+                        res.forEach(file => {
+                            const fileExtension = file.original_name.split('.').pop().toLowerCase();
+                            const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+                            const filePath = '/storage/' + file.path;
+
+                            if (isImage) {
+                                $('.chat-files').append(`
+                                    <div style="width: 100px;">
+                                        <a href="${filePath}" target="_blank">
+                                            <img src="${filePath}" alt="${file.original_name}" style="width: 100%; height: auto;" class="img-thumbnail">
+                                        </a>
+                                    </div>
+                                `);
+                            } else {
+                                $('.chat-files').append(`
+                                    <div style="width: 100px; text-align: center;">
+                                        <i class="fas fa-file fa-2x mb-1"></i><br>
+                                        <a href="${filePath}" target="_blank" style="font-size: 12px;">${file.original_name}</a>
+                                    </div>
+                                `);
+                            }
+                        });
+                    }).fail(err => {
+                        console.log(err)
+                    });
+                });
+
+
                 $('#toggleButton').click(function () {
                     $('#friendsSidebar').fadeToggle(200);
                     $('#overlay').fadeToggle(200);
@@ -522,6 +606,8 @@
                                             <div class="chatbox" id="chatbox-${chatId}">
                                                 <div class="chatbox-header">
                                                     <span>${messageResponse.chat.name}</span>
+                                                    <button data-bs-toggle="modal" data-bs-target="#chatFiles" data-id="${chatId}" class="show-chat-files" title="Show Files"
+                                                            style="background:none;border:none;color:white;font-size:16px;"><i class="fa fa-file"></i></button>
                                                     <button data-id="${chatId}" class="delete-chat" title="Delete Conversation"
                                                             style="background:none;border:none;color:white;font-size:16px;"><i class="fa fa-trash"></i></button>
                                                     <button class="close-chat" title="Close"

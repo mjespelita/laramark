@@ -25,7 +25,9 @@
     </div>
 
     <div class="chat-history">
-        <div class="spinner-border"></div>
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <div class="spinner-border"></div>
+        </div>
     </div>
 
     <hr style="margin: 1rem 0;">
@@ -231,6 +233,8 @@
                                         <div class="chatbox" id="chatbox-${chatId}">
                                             <div class="chatbox-header">
                                                 <span>${messageResponse.chat.name}</span>
+                                                <button data-bs-toggle="modal" data-bs-target="#chatFiles" data-id="${chatId}" class="show-chat-files" title="Show Files"
+                                                        style="background:none;border:none;color:white;font-size:16px;"><i class="fa fa-file"></i></button>
                                                 <button data-id="${chatId}" class="delete-chat" title="Delete Conversation"
                                                         style="background:none;border:none;color:white;font-size:16px;"><i class="fa fa-trash"></i></button>
                                                 <button class="close-chat" title="Close"
