@@ -39,13 +39,43 @@
     </div>
 
     @foreach (App\Models\User::whereNot('id', Auth::user()->id)->get() as $user)
-        <div class="friend" data-id="{{ $user->id }}" data-name="{{ $user->name }}"
-            style="display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #ddd; padding: 8px; margin-bottom: 8px; border-radius: 5px; cursor: pointer;">
-            <img src="{{ $user->profile_photo_path ? url('storage/' . $user->profile_photo_path) : url('assets/profile_photo_placeholder.png') }}"
-                    alt="{{ $user->name }}"
-                    style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
-            <span style="font-size: 14px;">{{ $user->name }}</span>
-        </div>
+    @php
+        $hasPhoto = $user->profile_photo_path;
+        $initials = '';
+        if (!$hasPhoto) {
+            $names = explode(' ', trim($user->name));
+            $initials = strtoupper(substr($names[0], 0, 1) . substr(end($names), 0, 1));
+        }
+    @endphp
+
+    <div class="friend" data-id="{{ $user->id }}" data-name="{{ $user->name }}"
+        style="display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #ddd; padding: 8px; margin-bottom: 8px; border-radius: 5px; cursor: pointer;">
+        
+        @if ($hasPhoto)
+            <img src="{{ url('storage/' . $user->profile_photo_path) }}"
+                alt="{{ $user->name }}"
+                style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
+        @else
+            <div style="
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                background: linear-gradient(to bottom, #2196F3, #1976D2);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 14px;
+                font-family: sans-serif;
+            ">
+                {{ $initials }}
+            </div>
+        @endif
+
+        <span style="font-size: 14px;">{{ $user->name }}</span>
+    </div>
+
     @endforeach
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -78,6 +108,39 @@
                         const fontWeight = chat.seen ? 'normal' : 'bold';
                         const italicPreview = chat.latest_message ? `<i>"${chat.latest_message}"</i>` : '';
 
+                        // change
+                        // Get initials from name
+                        function getInitials(name) {
+                            const names = name.trim().split(' ');
+                            const first = names[0]?.[0] || '';
+                            const last = names.length > 1 ? names[names.length - 1]?.[0] || '' : '';
+                            return (first + last).toUpperCase();
+                        }
+
+                        console.log(chat);
+
+                        // Determine avatar HTML
+                        const avatarHtml = chat.receiver_profile_picture
+                            ? `<img src="/storage/${chat.receiver_profile_picture}"
+                                    alt="${chat.receiver_name}"
+                                    style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">`
+                            : `<div style="
+                                    width: 36px;
+                                    height: 36px;
+                                    border-radius: 50%;
+                                    background: linear-gradient(to bottom, #2196F3, #1976D2);
+                                    color: white;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-weight: bold;
+                                    font-size: 14px;
+                                    font-family: sans-serif;
+                                ">
+                                    ${getInitials(chat.receiver_name)}
+                                </div>`;
+
+                        // Append the chat history entry
                         $('.chat-history').append(`
                             <div class="chat-history-user"
                                 data-id="${chat.receiver_id}"
@@ -95,13 +158,12 @@
                                     font-weight: ${fontWeight};
                                 ">
 
-                                <img src="/${chat.receiver_profile_picture ? 'storage/' + chat.receiver_profile_picture : 'assets/profile_photo_placeholder.png'}"
-                                    alt="${chat.receiver_name}"
-                                    style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
-
-                                <span style="font-size: 14px;">${chat.receiver_name}</span> - ${italicPreview}
+                                ${avatarHtml}
+                                <span style="font-size: 14px;">${(chat.receiver_name === "Group Chat") ? chat.chat_name : chat.receiver_name}</span> - ${italicPreview}
                             </div>
                         `);
+
+                        // end change
                     });
 
                     $(".search-people-recent-chat").on("keyup", function() {
@@ -146,7 +208,7 @@
                             delay: 5000, // Poll every 5 seconds
                             failRetryCount: 3, // Retry on failure
                             onSuccess: (messageResponse) => {
-                                console.log(messageResponse);
+                                console.log((messageResponse.chat.isGroup === 1) ? 'is group' : 'not group');
 
                                 const chatId = messageResponse.chatId;
                                 const chatboxSelector = `#chatbox-${chatId}`;
@@ -202,6 +264,9 @@
                                             }
                                         });
                                     }
+
+                                    
+                                    console.log(msg)
 
                                     // Append the message with optional attachments
                                     messageHtml += `

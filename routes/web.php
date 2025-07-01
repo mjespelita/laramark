@@ -209,9 +209,9 @@ Route::middleware([
             return [
                 'chat_id' => $chat->id,
                 'chat_name' => $chat->name,
-                'receiver_id' => $receiver?->id,
-                'receiver_name' => $receiver?->name,
-                'receiver_profile_picture' => $receiver?->profile_photo_path,
+                'receiver_id' => (Chatparticipants::where('chats_id', $chat->id)->get()[1]['users_id'] === 4) ? 4 : $receiver?->id,
+                'receiver_name' => (Chatparticipants::where('chats_id', $chat->id)->get()[1]['users_id'] === 4) ? $chat->name : $receiver?->name,
+                'receiver_profile_picture' => (Chatparticipants::where('chats_id', $chat->id)->get()[1]['users_id'] === 4) ? $chat->name : $receiver?->profile_photo_path,
                 'latest_message' => Smark\Smark\Stringer::truncateString($latestMessage?->message, 10),
                 'latest_message_at' => $latestMessage?->updated_at,
                 'seen' => $seen,

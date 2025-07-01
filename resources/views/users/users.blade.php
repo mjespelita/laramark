@@ -75,7 +75,10 @@
                             <th scope='col'>
                             <input type='checkbox' name='' id='' class='checkAll'>
                             </th>
-                            <th>Name</th><th>Email</th><th>Role</th>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -86,7 +89,35 @@
                                 <th scope='row'>
                                     <input type='checkbox' name='' id='' class='check' data-id='{{ $item->id }}'>
                                 </th>
-                                <td>{{ $item->name }}</td><td>{{ $item->email }}</td><td>{{ $item->role }}</td>
+                                <td>
+                                    @if ($item->profile_photo_path)
+                                        <img src="{{ url('storage/'.$item->profile_photo_path) }}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" alt="">
+                                    @else
+                                        @php
+                                            $names = explode(' ', trim($item->name));
+                                            $initials = strtoupper(substr($names[0], 0, 1) . substr(end($names), 0, 1));
+                                        @endphp
+                                        <div style="
+                                            width: 50px;
+                                            height: 50px;
+                                            border-radius: 50%;
+                                            background: linear-gradient(to bottom, #2196F3, #1976D2);
+                                            color: white;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            font-weight: bold;
+                                            font-size: 16px;
+                                            font-family: sans-serif;
+                                        ">
+                                            {{ $initials }}
+                                        </div>
+                                    @endif
+                                </td>
+                                
+                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->email }}</td>
+                                <td>{{ $item->role }}</td>
                                 <td>
                                     <a href='{{ route('users.show', $item->id) }}'><i class='fas fa-eye text-success'></i></a>
                                     <a href='{{ route('users.edit', $item->id) }}'><i class='fas fa-edit text-info'></i></a>

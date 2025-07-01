@@ -19,3 +19,4 @@ yarn-error.log
 /.vscode
 /.zed
 /public/storage/files/chat_uploads
+/public/storage/profile-photos

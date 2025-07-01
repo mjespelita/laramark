@@ -41,7 +41,7 @@
                     ],
                     [
                         'url' => 'users',
-                        'icon' => 'fas fa-bars',
+                        'icon' => 'fas fa-users',
                         'label' => 'Users',
                         'active' => request()->is('users', 'create-users', 'trash-users', 'show-users/*', 'edit-users/*', 'delete-users/*', 'users-search*'),
                     ],
@@ -189,7 +189,7 @@
                     height: 50vh;
                     background: white;
                     border: none;
-                    border-radius: 0;
+                    border-radius: 20px 20px 0 0;
                     box-shadow: none;
                     display: flex;
                     flex-direction: column;
@@ -197,6 +197,7 @@
 
                 .chatbox-header {
                     background: #0C8EFD;
+                    border-radius: 20px 20px 0 0;
                     color: white;
                     padding: 12px 15px;
                     display: flex;
@@ -519,7 +520,8 @@
                                 delay: 5000, // Poll every 5 seconds
                                 failRetryCount: 3, // Retry on failure
                                 onSuccess: (messageResponse) => {
-                                    console.log(messageResponse);
+                                    
+                                    console.log((messageResponse.chat.isGroup === 1) ? 'is group' : 'not group');
 
                                     const chatId = messageResponse.chatId;
                                     const chatboxSelector = `#chatbox-${chatId}`;
@@ -602,6 +604,7 @@
                                         $(`${chatboxSelector} .chatbox-body`).html(messageHtml);
                                     } else {
                                         // Otherwise, create a new chatbox
+                                        console.log((messageResponse.chat.isGroup === 1) ? 'is group' : 'not group');
                                         const chatbox = `
                                             <div class="chatbox" id="chatbox-${chatId}">
                                                 <div class="chatbox-header">
