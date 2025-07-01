@@ -38,7 +38,7 @@
         <input type="text" class="form-control mb-2 search-people-new-chat" placeholder="Search People...">
     </div>
 
-    @foreach (App\Models\User::whereNot('id', Auth::user()->id)->get() as $user)
+    @foreach (App\Models\User::whereNot('name', 'Group Chat')->whereNot('id', Auth::user()->id)->get() as $user)
     @php
         $hasPhoto = $user->profile_photo_path;
         $initials = '';
