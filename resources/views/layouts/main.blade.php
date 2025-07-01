@@ -54,7 +54,7 @@
             </a>
         @endforeach
 
-        <a href="release-notes.html">
+        <a href="/release-notes.html">
             <i class="fas fa-file-alt"></i> Release Notes
         </a>
 

@@ -1,6 +1,7 @@
 CRON JOBS ------------------------------------------------------------------------------------------------------------
 
 * * * * *	/usr/bin/php /home/u856365670/domains/(domain)/public_html/artisan sched - for sched
+* * * * *	/usr/bin/php /home/u856365670/domains/(domain)/public_html/artisan queue:work - for sched
 * * * * *	/usr/bin/php /home/u856365670/domains/(domain)/public_html/artisan file-cleanup - for file cleanup in chat
 
 Major Release --------------------------------------------------------------------------------------------------------
