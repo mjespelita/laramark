@@ -594,7 +594,6 @@
                         _token: $('meta[name="csrf-token"]').attr('content')
                     }, function (res) {
                         Swal.fire(res, "", "success");
-                        console.log(res);
                         // Close the modal
                         window.location.reload()
                     }).fail(err => {
@@ -611,7 +610,6 @@
                         _token: $('meta[name="csrf-token"]').attr('content')
                     }, function (res) {
                         Swal.fire(res, "", "success");
-                        console.log(res);
                         // Close the modal
                         window.location.reload()
                     }).fail(err => {
@@ -751,8 +749,6 @@
                     const name = $(this).data('name');
                     const friend_id = $(this).data('id'); // ✅ get friend ID
 
-                    console.log(friend_id)
-
                     // Prevent duplicate chatboxes
                     if ($('#chatbox-' + friend_id).length > 0) return;
 
@@ -770,8 +766,6 @@
                                 delay: 5000, // Poll every 5 seconds
                                 failRetryCount: 3, // Retry on failure
                                 onSuccess: (messageResponse) => {
-
-                                    console.log((messageResponse.chat.isGroup === 1) ? 'is group' : 'not group');
 
                                     const chatId = messageResponse.chatId;
                                     const chatboxSelector = `#chatbox-${chatId}`;
@@ -854,7 +848,6 @@
                                         $(`${chatboxSelector} .chatbox-body`).html(messageHtml);
                                     } else {
                                         // Otherwise, create a new chatbox
-                                        console.log((messageResponse.chat.isGroup === 1) ? 'is group' : 'not group');
                                         const chatbox = `
                                             <div class="chatbox" id="chatbox-${chatId}">
                                                 <div class="chatbox-header">
@@ -995,7 +988,6 @@
                                                     contentType: false,
                                                     processData: false,
                                                     success: function (uploadRes) {
-                                                        console.log('Files uploaded:', uploadRes);
                                                         clearChatInput(chatId);
                                                     },
                                                     error: function (err) {

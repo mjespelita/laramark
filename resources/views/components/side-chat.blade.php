@@ -21,7 +21,7 @@
             <h3 style="margin-bottom: 1rem;">Custom Chats</h3>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12">
-            <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#createNewGroup">Create New Group</button>
+            {{-- <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#createNewGroup">Create New Group</button> --}}
         </div>
     </div>
 
@@ -55,7 +55,7 @@
             }
         @endphp
 
-        <div class="friend" data-id="{{ strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '_', $user->name.$user->id.$user->created_at), '_')) }}" data-name="{{ $user->name }}"
+        <div class="friend" data-id="{{ $user->id }}" data-name="{{ $user->name }}"
             style="display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #ddd; padding: 8px; margin-bottom: 8px; border-radius: 5px; cursor: pointer;">
 
             @if ($hasPhoto)
@@ -123,8 +123,6 @@
                             const last = names.length > 1 ? names[names.length - 1]?.[0] || '' : '';
                             return (first + last).toUpperCase();
                         }
-
-                        console.log(chat);
 
                         // Determine avatar HTML
                         const avatarHtml = chat.receiver_profile_picture
@@ -206,8 +204,6 @@
                 const name = $(this).data('name');
                 const friend_id = $(this).data('id'); // ✅ get friend ID
 
-                console.log(friend_id)
-
                 // Prevent duplicate chatboxes
                 if ($('#chatbox-' + friend_id).length > 0) return;
 
@@ -225,7 +221,6 @@
                             delay: 5000, // Poll every 5 seconds
                             failRetryCount: 3, // Retry on failure
                             onSuccess: (messageResponse) => {
-                                console.log((messageResponse.chat.isGroup === 1) ? 'is group' : 'not group');
 
                                 const chatId = messageResponse.chatId;
                                 const chatboxSelector = `#chatbox-${chatId}`;
@@ -308,7 +303,6 @@
                                     $(`${chatboxSelector} .chatbox-body`).html(messageHtml);
                                 } else {
                                     // Otherwise, create a new chatbox
-                                    console.log(messageResponse)
                                     const chatbox = `
                                         <div class="chatbox" id="chatbox-${chatId}">
                                             <div class="chatbox-header">
