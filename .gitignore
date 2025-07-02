@@ -20,3 +20,4 @@ yarn-error.log
 /.zed
 /public/storage/files/chat_uploads
 /public/storage/profile-photos
+/public/storage/livewire-tmp

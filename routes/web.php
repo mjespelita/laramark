@@ -320,6 +320,128 @@ Route::middleware([
 
     });
 
+    Route::post('/create-group', function (Request $request) {
+        $request->validate([
+            'groupName' => 'required'
+        ]);
+
+        $newGroup = Chats::create([
+            'name' => $request->groupName,
+            'is_group' => 0,
+            'users_id' => Auth::user()->id,
+        ]);
+
+        Chatparticipants::create([
+            'chats_id' => $newGroup->id,
+            'chats_users_id' => Auth::user()->id,
+            'users_id' => Auth::user()->id,
+        ]);
+
+        Chatparticipants::create([
+            'chats_id' => $newGroup->id,
+            'chats_users_id' => Auth::user()->id,
+            'users_id' => 4,
+        ]);
+
+        Messages::create([
+            'message' => Auth::user()->name . ' created a new group ' . $request->groupName,
+            'chats_id' => $newGroup->id,
+            'chats_users_id' => Auth::user()->id,
+            'users_id' => Auth::user()->id,
+            'has_attachments' => 0,
+        ]);
+
+        return response()->json('Group created successfully!');
+
+    });
+
+
+    Route::post('/add-member', function (Request $request) {
+        $request->validate([
+            'members' => 'required',
+            'chatId' => 'required',
+        ]);
+
+        // Pull the chat owner once (1 query instead of N)
+        $chatUserId = Chats::where('id', $request->chatId)->value('users_id');
+
+        foreach ($request->members as $memberId) {
+
+            // Insert only if (chats_id, chats_users_id, users_id) is new
+            $participant = Chatparticipants::firstOrCreate(
+                [
+                    'chats_id'       => $request->chatId,
+                    'chats_users_id' => $chatUserId,
+                    'users_id'       => $memberId,
+                ]
+            );
+
+            // wasRecentlyCreated == true  ➜  a new row was inserted
+            if ($participant->wasRecentlyCreated) {
+
+                $addedUserName = User::where('id', $memberId)->value('name');
+
+                Messages::create([
+                    'message'         => Auth::user()->name . ' added ' . $addedUserName . ' to the group.',
+                    'chats_id'        => $request->chatId,
+                    'chats_users_id'  => $chatUserId,
+                    'users_id'        => Auth::user()->id,
+                    'has_attachments' => 0,
+                ]);
+            }
+        }
+
+        return response()->json("Added!");
+
+    });
+
+    Route::post('/remove-member', function (Request $request) {
+        $request->validate([
+            'members' => 'required',
+            'chatId' => 'required',
+        ]);
+
+        $chatUserId = Chats::where('id', $request->chatId)->value('users_id');
+
+        if($chatUserId != Auth::user()->id)
+        {
+            foreach ($request->members as $memberId) {
+
+                if(Auth::user()->id == $memberId)
+                {
+                    $addedUserName = User::where('id', $memberId)->value('name');
+
+                    Chatparticipants::where('chats_id', $request->chatId)->where('users_id', $memberId)->delete();
+                    Messages::create([
+                        'message'         => Auth::user()->name . ' has left the group.',
+                        'chats_id'        => $request->chatId,
+                        'chats_users_id'  => $chatUserId,
+                        'users_id'        => $chatUserId,
+                        'has_attachments' => 0,
+                    ]);
+                }
+            }
+            return response()->json("Only administrators can remove other members. You may remove your own account.");
+        } else {
+
+            foreach ($request->members as $memberId) {
+                $addedUserName = User::where('id', $memberId)->value('name');
+
+                Chatparticipants::where('chats_id', $request->chatId)->where('users_id', $memberId)->delete();
+                Messages::create([
+                    'message'         => Auth::user()->name . ' removed ' . $addedUserName . ' from the group.',
+                    'chats_id'        => $request->chatId,
+                    'chats_users_id'  => $chatUserId,
+                    'users_id'        => Auth::user()->id,
+                    'has_attachments' => 0,
+                ]);
+            }
+
+            return response()->json("Removed!");
+        }
+
+    });
+
     // END CHAT ROUTES
 
     Route::get('/dashboard', function () {

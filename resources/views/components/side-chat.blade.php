@@ -16,7 +16,14 @@
         &times;
     </button>
 
-    <h3 style="margin-bottom: 1rem;">Custom Chats</h3>
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <h3 style="margin-bottom: 1rem;">Custom Chats</h3>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12">
+            <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#createNewGroup">Create New Group</button>
+        </div>
+    </div>
 
     <b style="display: block; margin-bottom: 0.5rem;">Recent Chats</b>
 
@@ -39,42 +46,42 @@
     </div>
 
     @foreach (App\Models\User::whereNot('name', 'Group Chat')->whereNot('id', Auth::user()->id)->get() as $user)
-    @php
-        $hasPhoto = $user->profile_photo_path;
-        $initials = '';
-        if (!$hasPhoto) {
-            $names = explode(' ', trim($user->name));
-            $initials = strtoupper(substr($names[0], 0, 1) . substr(end($names), 0, 1));
-        }
-    @endphp
+        @php
+            $hasPhoto = $user->profile_photo_path;
+            $initials = '';
+            if (!$hasPhoto) {
+                $names = explode(' ', trim($user->name));
+                $initials = strtoupper(substr($names[0], 0, 1) . substr(end($names), 0, 1));
+            }
+        @endphp
 
-    <div class="friend" data-id="{{ $user->id }}" data-name="{{ $user->name }}"
-        style="display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #ddd; padding: 8px; margin-bottom: 8px; border-radius: 5px; cursor: pointer;">
-        
-        @if ($hasPhoto)
-            <img src="{{ url('storage/' . $user->profile_photo_path) }}"
-                alt="{{ $user->name }}"
-                style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
-        @else
-            <div style="
-                width: 36px;
-                height: 36px;
-                border-radius: 50%;
-                background: linear-gradient(to bottom, #2196F3, #1976D2);
-                color: white;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 14px;
-                font-family: sans-serif;
-            ">
-                {{ $initials }}
-            </div>
-        @endif
+        <div class="friend" data-id="{{ strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '_', $user->name.$user->id.$user->created_at), '_')) }}" data-name="{{ $user->name }}"
+            style="display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid #ddd; padding: 8px; margin-bottom: 8px; border-radius: 5px; cursor: pointer;">
 
-        <span style="font-size: 14px;">{{ $user->name }}</span>
-    </div>
+            @if ($hasPhoto)
+                <img src="{{ url('storage/' . $user->profile_photo_path) }}"
+                    alt="{{ $user->name }}"
+                    style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
+            @else
+                <div style="
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    background: linear-gradient(to bottom, #2196F3, #1976D2);
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 14px;
+                    font-family: sans-serif;
+                ">
+                    {{ $initials }}
+                </div>
+            @endif
+
+            <span style="font-size: 14px;">{{ $user->name }}</span>
+        </div>
 
     @endforeach
 
@@ -121,7 +128,7 @@
 
                         // Determine avatar HTML
                         const avatarHtml = chat.receiver_profile_picture
-                            ? `<img src="/storage/${chat.receiver_profile_picture}"
+                            ? `<img src="${(chat.receiver_id === 4) ? 'assets/gc-profile-placeholder.jpg' : `/storage/${chat.receiver_profile_picture}`}"
                                     alt="${chat.receiver_name}"
                                     style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">`
                             : `<div style="
@@ -160,8 +167,16 @@
 
                                 ${avatarHtml}
                                 <span style="font-size: 14px;">${(chat.receiver_name === "Group Chat") ? chat.chat_name : chat.receiver_name}</span> - ${italicPreview}
+
+                                ${chat.receiver_id === 4 ? `
+                                    <div style="margin-left: auto; display: flex; gap: 10px;">
+                                        <i data-bs-toggle="modal" data-bs-target="#addMember${chat.chat_id}" class="fa-solid fa-plus text-success" title="Add Members"></i>
+                                        <i data-bs-toggle="modal" data-bs-target="#showMembers${chat.chat_id}" class="fa-solid fa-eye text-info" title="Show Members"></i>
+                                    </div>
+                                ` : ``}
                             </div>
                         `);
+
 
                         // end change
                     });
@@ -190,6 +205,8 @@
             $(document).on('click', '.chat-history-user', function () {
                 const name = $(this).data('name');
                 const friend_id = $(this).data('id'); // ✅ get friend ID
+
+                console.log(friend_id)
 
                 // Prevent duplicate chatboxes
                 if ($('#chatbox-' + friend_id).length > 0) return;
@@ -265,9 +282,6 @@
                                         });
                                     }
 
-                                    
-                                    console.log(msg)
-
                                     // Append the message with optional attachments
                                     messageHtml += `
                                         <div class="chat-msg ${isMine ? 'mine' : 'other'}">
@@ -294,6 +308,7 @@
                                     $(`${chatboxSelector} .chatbox-body`).html(messageHtml);
                                 } else {
                                     // Otherwise, create a new chatbox
+                                    console.log(messageResponse)
                                     const chatbox = `
                                         <div class="chatbox" id="chatbox-${chatId}">
                                             <div class="chatbox-header">
