@@ -16,7 +16,7 @@ class UsersController extends Controller {
     public function index()
     {
         return view('users.users', [
-            'users' => User::whereNot('name', 'Group Chat')->orderBy('id', 'desc')->paginate(10)
+            'users' => User::orderBy('id', 'desc')->paginate(10)
         ]);
     }
 

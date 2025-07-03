@@ -45,7 +45,7 @@
         <input type="text" class="form-control mb-2 search-people-new-chat" placeholder="Search People...">
     </div>
 
-    @foreach (App\Models\User::whereNot('name', 'Group Chat')->whereNot('id', Auth::user()->id)->get() as $user)
+    @foreach (App\Models\User::whereNot('id', Auth::user()->id)->get() as $user)
         @php
             $hasPhoto = $user->profile_photo_path;
             $initials = '';
@@ -126,7 +126,7 @@
 
                         // Determine avatar HTML
                         const avatarHtml = chat.receiver_profile_picture
-                            ? `<img src="${(chat.receiver_id === 4) ? 'assets/gc-profile-placeholder.jpg' : `/storage/${chat.receiver_profile_picture}`}"
+                            ? `<img src="/storage/${chat.receiver_profile_picture}"
                                     alt="${chat.receiver_name}"
                                     style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">`
                             : `<div style="
@@ -164,14 +164,7 @@
                                 ">
 
                                 ${avatarHtml}
-                                <span style="font-size: 14px;">${(chat.receiver_name === "Group Chat") ? chat.chat_name : chat.receiver_name}</span> - ${italicPreview}
-
-                                ${chat.receiver_id === 4 ? `
-                                    <div style="margin-left: auto; display: flex; gap: 10px;">
-                                        <i data-bs-toggle="modal" data-bs-target="#addMember${chat.chat_id}" class="fa-solid fa-plus text-success" title="Add Members"></i>
-                                        <i data-bs-toggle="modal" data-bs-target="#showMembers${chat.chat_id}" class="fa-solid fa-eye text-info" title="Show Members"></i>
-                                    </div>
-                                ` : ``}
+                                <span style="font-size: 14px;">${chat.receiver_name}</span> - ${italicPreview}
                             </div>
                         `);
 
@@ -330,7 +323,7 @@
 
                                                 <textarea class="chat-input" placeholder="Type a message…" rows="1"></textarea>
 
-                                                <button class="send-btn" title="Send" id="send-btn">
+                                                <button type="submit" class="send-btn" title="Send" id="send-btn">
                                                     <i class="fas fa-paper-plane"></i>
                                                 </button>
                                             </div>

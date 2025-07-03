@@ -32,11 +32,5 @@ class DatabaseSeeder extends Seeder
             'email' => 'johndoe@example.com',
             'role' => 'admin',
         ]);
-
-        User::factory()->create([
-            'name' => 'Group Chat',
-            'email' => 'groupchat@example.com',
-            'role' => 'admin',
-        ]);
     }
 }
