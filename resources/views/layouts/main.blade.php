@@ -1030,15 +1030,15 @@
                 // Insert HTML into chat container
                 chatContainer.innerHTML = `
                         <div ng-app="chatApp" ng-controller="ChatController" style="display: flex; flex-direction: column; height: 100%;">
-                            <div class="chatbox-header">Librify / GPT-3 [Experimental]</div>
+                            <div class="chatbox-header">Chat with GPT</div>
                             <div class="chatbox-messages" id="chatboxMessages">
                             <div ng-if="!beginConversation" class="no-chat-placeholder text-center text-muted my-3">
                                 <i class="fas fa-robot fa-2x d-block mb-2"></i>
                                 <small>
-                                    This is the Librify Automated Chatbot together with the GPT-3 model. <br>
+                                    This is an automated chatbot together with the GPT model. <br>
                                     For system-related questions, click "Ask question about the system." <br>
                                     For a general AI conversation, simply type your message below. <br>
-                                    Note: GPT-3 does not have knowledge about our specific system.
+                                    Note: GPT model does not have knowledge about our specific system.
                                 </small>
                             </div>
                             <div ng-repeat="msg in messages" class="chatbox-message" ng-class="msg.sender">[[ msg.text ]]</div>
@@ -1051,7 +1051,7 @@
                             </ul>
                             </div>
                             <form ng-submit="sendMessage()" class="chatbox-footer">
-                            <input type="text" ng-model="userInput" placeholder="Send a message to GPT-3..." required>
+                            <input type="text" ng-model="userInput" placeholder="Send a message to GPT..." required>
                             <button type="submit">Send</button>
                             </form>
                         </div>
