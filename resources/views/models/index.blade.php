@@ -77,7 +77,7 @@
                         @foreach ($models as $m)
                             @php
                                 $modelClass = "App\\Models\\$m";
-                                $instance = class_exists($modelClass) ? new $modelClass : null;
+                                $instance = class_exists($modelClass) ? $modelClass::first() : null;
                                 $columns = $instance ? array_keys($instance->getAttributes()) : [];
                             @endphp
 
@@ -85,14 +85,15 @@
                                 <div class="card h-100 shadow-sm">
                                     <div class="card-body">
                                         <h5 class="card-title">{{ $m }}</h5>
-                                        @if (count($columns))
+                                        
+                                        @if ($columns)
                                             <ul class="list-group list-group-flush">
                                                 @foreach ($columns as $col)
                                                     <li class="list-group-item">{{ $col }}</li>
                                                 @endforeach
                                             </ul>
                                         @else
-                                            <div class="text-muted mt-2">No columns detected</div>
+                                            <div class="text-muted mt-2">No records found (or table is empty)</div>
                                         @endif
                                     </div>
                                     <div class="card-footer bg-transparent">
