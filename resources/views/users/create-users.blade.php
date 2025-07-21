@@ -2,7 +2,6 @@
 @extends('layouts.main')
 
 @section('content')
-<x-main-notification />
     <h1>Create a new users</h1>
 
     <div class='card'>
