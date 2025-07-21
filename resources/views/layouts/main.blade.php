@@ -28,6 +28,12 @@
             @php
                 $navLinks = [
                     [
+                        'url' => '_database',
+                        'icon' => 'fas fa-times',
+                        'label' => 'Database',
+                        'active' => request()->is('_database'),
+                    ],
+                    [
                         'url' => 'dashboard',
                         'icon' => 'fas fa-tachometer-alt',
                         'label' => 'Dashboard',
