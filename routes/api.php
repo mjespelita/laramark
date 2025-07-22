@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/test', function (Request $request) {
+    return "Hello";
+});
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -18,6 +22,7 @@ Route::post('/register', function (Request $request) {
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users',
         'password' => ['required'],
+        'role' => ['required'],
     ]);
 
     // Create a new user
@@ -25,6 +30,7 @@ Route::post('/register', function (Request $request) {
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
+        'role' => $request->role,
     ]);
 
     // Generate a new token for the user

@@ -58,6 +58,10 @@ Route::middleware([
 
     Route::get('/_database/{model?}', [SmarkController::class, 'modelViewer'])->name('models.index');
 
+    // POSTMAN
+
+    Route::get('/_postman', [SmarkController::class, 'postman']);
+
     // end...
 
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');

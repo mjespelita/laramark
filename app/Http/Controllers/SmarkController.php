@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File as FacadesFile;
+use Illuminate\Support\Facades\Http;
 use OwenIt\Auditing\Models\Audit;
 use Smark\Smark\File;
 use Smark\Smark\Stringer;
@@ -411,4 +412,13 @@ class SmarkController extends Controller
     }
 
     // END OF USERS
+
+    // POSTMAN
+
+    // Show the form
+    public function postman()
+    {
+        return view('postman.index');
+    }
+    
 }

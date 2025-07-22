@@ -2,27 +2,101 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Model Viewer</title>
-        <link href='{{ url('assets/bootstrap/bootstrap.min.css') }}' rel='stylesheet'>
+    <title>Model Viewer - Dark Theme</title>
+    <link href='{{ url('assets/bootstrap/bootstrap.min.css') }}' rel='stylesheet'>
     <style>
         body {
+            background-color: #121212;
+            color: #e0e0e0;
             padding-top: 20px;
         }
+
+        a {
+            color: #00bfff;
+        }
+
+        a:hover {
+            color: #33ccff;
+        }
+
         .sidebar {
             min-height: 100vh;
-            border-right: 1px solid #dee2e6;
+            background-color: #1e1e1e;
+            border-right: 1px solid #333;
+            padding: 1rem;
         }
+
         .active-link {
             font-weight: bold;
-            color: #0d6efd !important;
+            color: #00bfff !important;
+        }
+
+        .card {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            border: 1px solid #333;
         }
 
         .card-title {
             font-weight: 600;
             font-size: 1.1rem;
+            color: #00bfff;
         }
+
+        .card-footer {
+            border-top: 1px solid #333;
+        }
+
+        .btn-primary {
+            background-color: #00bfff;
+            border-color: #00bfff;
+        }
+
+        .btn-primary:hover {
+            background-color: #33ccff;
+            border-color: #33ccff;
+        }
+
         .list-group-item {
+            background-color: #2a2a2a;
+            color: #e0e0e0;
             font-size: 0.875rem;
+            border-color: #333;
+        }
+
+        .table {
+            color: #e0e0e0;
+        }
+
+        .table th, .table td {
+            background-color: #1e1e1e;
+            border-color: #333;
+        }
+
+        .alert-info {
+            background-color: #2c3e50;
+            color: #00bfff;
+            border: none;
+        }
+
+        .pagination .page-link {
+            background-color: #1e1e1e;
+            color: #00bfff;
+            border: 1px solid #333;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #333;
+        }
+
+        .pagination .active .page-link {
+            background-color: #00bfff;
+            color: #000;
+            border-color: #00bfff;
+        }
+
+        body > div > div > div.col-md-10 > nav > div.d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between > div:nth-child(1) > p {
+            color: aliceblue !important;
         }
     </style>
 </head>
@@ -31,7 +105,7 @@
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-2 sidebar">
-                <h5 class="mt-3">Models</h5>
+                <h5 class="text-light">Models</h5>
                 <ul class="nav flex-column">
                     @foreach ($models as $m)
                         <li class="nav-item">
@@ -45,11 +119,11 @@
 
             <!-- Main Content -->
             <div class="col-md-10">
-                <h3 class="mt-3">{{ $model ?? 'Select a Model' }}</h3>
+                <h3 class="mt-3 text-info">{{ $model ?? 'Select a Model' }}</h3>
 
                 @if ($records->count())
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     @foreach ($records->first()->getAttributes() as $key => $value)

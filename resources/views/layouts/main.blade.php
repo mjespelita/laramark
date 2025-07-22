@@ -34,6 +34,12 @@
                         'active' => request()->is('_database'),
                     ],
                     [
+                        'url' => '_postman',
+                        'icon' => 'fas fa-times',
+                        'label' => 'Postman',
+                        'active' => request()->is('_postman'),
+                    ],
+                    [
                         'url' => 'dashboard',
                         'icon' => 'fas fa-tachometer-alt',
                         'label' => 'Dashboard',
