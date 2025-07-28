@@ -108,16 +108,16 @@ shell_exec("php artisan make:component MainNotification"); // index
 file_put_contents(resource_path("views/components/main-notification.blade.php"), "
 <div style='text-align: right;'>
     @if (session()->has('success'))
-    <p class='alert alert-success text-success mb-0'><i class='fas fa-check'></i> {{ session()->get('success') }}</p>
+    <p class='mb-0 alert alert-success text-success'><i class='fas fa-check'></i> {{ session()->get('success') }}</p>
     @endif
 
     @if (session()->has('error'))
-        <p class='alert alert-danger text-danger mb-0'><i class='fas fa-warning'></i> {{ session()->get('error') }}</p>
+        <p class='mb-0 alert alert-danger text-danger'><i class='fas fa-warning'></i> {{ session()->get('error') }}</p>
     @endif
 
     @if (\$errors->any())
         @foreach (\$errors->all() as \$err)
-            <p class='alert alert-danger text-danger mb-0'><i class='fas fa-warning'></i> {{ \$err }}</p>
+            <p class='mb-0 alert alert-danger text-danger'><i class='fas fa-warning'></i> {{ \$err }}</p>
         @endforeach
     @endif
 </div>
@@ -444,60 +444,13 @@ $textToAppend = "
     Route::get('/restore-{$modelNameLowerCase}/{{$modelNameLowerCase}Id}', [{$modelName}Controller::class, 'restore'])->name('{$modelNameLowerCase}.restore');
 
     // $modelName Search
-    Route::get('/$modelNameLowerCase-search', function (Request \$request) {
-        \$search = \$request->get('search');
-
-        // Perform the search logic
-        $$modelNameLowerCase = $modelName::when(\$search, function (\$query) use (\$search) {
-            return \$query->where('name', 'like', \"%\$search%\");
-        })->paginate(10);
-
-        return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase', 'search'));
-    });
+    Route::get('/$modelNameLowerCase-search', [{$modelName}Controller::class, 'search']);
 
     // $modelName Paginate
-    Route::get('/$modelNameLowerCase-paginate', function (Request \$request) {
-        // Retrieve the 'paginate' parameter from the URL (e.g., ?paginate=10)
-        \$paginate = \$request->input('paginate', 10); // Default to 10 if no paginate value is provided
-
-        // Paginate the $modelNameLowerCase based on the 'paginate' value
-        \$$modelNameLowerCase = $modelName::paginate(\$paginate); // Paginate with the specified number of items per page
-
-        // Return the view with the paginated $modelNameLowerCase
-        return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase'));
-    });
+    Route::get('/$modelNameLowerCase-paginate', [{$modelName}Controller::class, 'paginate']);
 
     // $modelName Filter
-    Route::get('/$modelNameLowerCase-filter', function (Request \$request) {
-        // Retrieve 'from' and 'to' dates from the URL
-        \$from = \$request->input('from');
-        \$to = \$request->input('to');
-
-        // Retrieve 'from' and 'to' dates from the URL
-        \$from = \$request->input('from');
-        \$to = \$request->input('to');
-
-        // Default query for $modelNameLowerCase
-        \$query = $modelName::query();
-
-        // Convert dates to Carbon instances for better comparison
-        \$fromDate = \$from ? Carbon::parse(\$from)->startOfDay() : null;
-        \$toDate = \$to ? Carbon::parse(\$to)->endOfDay() : null;
-
-        // Check if both 'from' and 'to' dates are provided
-        if (\$fromDate && \$toDate) {
-            // Ensure correct date filtering with full day range
-            \$$modelNameLowerCase = \$query->whereBetween('created_at', [\$fromDate, \$toDate])
-                           ->orderBy('created_at', 'desc')
-                           ->paginate(10);
-        } else {
-            // If 'from' or 'to' are missing, show all $modelNameLowerCase without filtering
-            \$$modelNameLowerCase = \$query->paginate(10);
-        }
-
-        // Return the view with $modelNameLowerCase and the selected date range
-        return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase', 'from', 'to'));
-    });
+    Route::get('/$modelNameLowerCase-filter', [{$modelName}Controller::class, 'filter']);
 
     // end...";
                                             // Function to append after the last `// end...`
@@ -563,7 +516,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
     <div class='card'>
         <div class='card-body'>
             <div class='row'>
-                <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
+                <div class='mt-2 col-lg-4 col-md-4 col-sm-12'>
                     <div class='row'>
                         <div class='col-4'>
                             <button type='button' class='btn btn-outline-secondary dropdown-toggle' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
@@ -591,7 +544,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
                         </div>
                     </div>
                 </div>
-                <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
+                <div class='mt-2 col-lg-4 col-md-4 col-sm-12'>
                     <form action='{{ url('/$modelNameLowerCase-filter') }}' method='get'>
                         <div class='input-group'>
                             <input type='date' class='form-control' id='from' name='from' required>
@@ -604,7 +557,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/$modelNameLowerCase.b
                         @csrf
                     </form>
                 </div>
-                <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
+                <div class='mt-2 col-lg-4 col-md-4 col-sm-12'>
                     <!-- Search Form -->
                     <form action='{{ url('/$modelNameLowerCase-search') }}' method='GET'>
                         <div class='input-group'>
@@ -733,7 +686,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/trash-$modelNameLower
     <div class='card'>
         <div class='card-body'>
             <div class='row'>
-                <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
+                <div class='mt-2 col-lg-4 col-md-4 col-sm-12'>
                     <div class='row'>
                         <div class='col-4'>
                             <button type='button' class='btn btn-outline-secondary dropdown-toggle' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
@@ -761,7 +714,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/trash-$modelNameLower
                         </div>
                     </div>
                 </div>
-                <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
+                <div class='mt-2 col-lg-4 col-md-4 col-sm-12'>
                     <form action='{{ url('/$modelNameLowerCase-filter') }}' method='get'>
                         <div class='input-group'>
                             <input type='date' class='form-control' id='from' name='from' required>
@@ -774,7 +727,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/trash-$modelNameLower
                         @csrf
                     </form>
                 </div>
-                <div class='col-lg-4 col-md-4 col-sm-12 mt-2'>
+                <div class='mt-2 col-lg-4 col-md-4 col-sm-12'>
                     <!-- Search Form -->
                     <form action='{{ url('/$modelNameLowerCase-search') }}' method='GET'>
                         <div class='input-group'>
@@ -901,7 +854,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/create-$modelNameLowe
             <form action='{{ route('$modelNameLowerCase.store') }}' method='POST'>
                 @csrf
                 $formDataHandler
-                <button type='submit' class='btn btn-primary mt-3'>Create</button>
+                <button type='submit' class='mt-3 btn btn-primary'>Create</button>
             </form>
         </div>
     </div>
@@ -939,7 +892,7 @@ file_put_contents(resource_path("views/$modelNameLowerCase/edit-$modelNameLowerC
             <form action='{{ route('$modelNameLowerCase.update', \$item->id) }}' method='POST'>
                 @csrf
                 $formDataHandler
-                <button type='submit' class='btn btn-primary mt-3'>Update</button>
+                <button type='submit' class='mt-3 btn btn-primary'>Update</button>
             </form>
         </div>
     </div>
@@ -1089,6 +1042,7 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                             use App\Http\Requests\Update{$modelName}Request;
                                             use Illuminate\Http\Request;
                                             use Illuminate\Support\Facades\Auth;
+                                            use Carbon\Carbon;
 
                                             class {$modelName}Controller extends Controller {
                                                 /**
@@ -1186,6 +1140,64 @@ $this->info("SUCCESS: View $modelNameLowerCase/show-$modelNameLowerCase.blade.ph
                                                     {$modelName}::where('id', \${$modelNameLowerCase}Id)->update(['isTrash' => '1']);
 
                                                     return redirect('/{$modelNameLowerCase}');
+                                                }
+
+                                                public function search(Request \$request)
+                                                {
+
+                                                    \$search = \$request->get('search');
+
+                                                    // Perform the search logic
+                                                    $$modelNameLowerCase = $modelName::when(\$search, function (\$query) use (\$search) {
+                                                        return \$query->where('name', 'like', "%\$search%");
+                                                    })->paginate(10);
+
+                                                    return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase', 'search'));
+                                                }
+
+                                                public function paginate(Request \$request)
+                                                {
+
+                                                    // Retrieve the 'paginate' parameter from the URL (e.g., ?paginate=10)
+                                                    \$paginate = \$request->input('paginate', 10); // Default to 10 if no paginate value is provided
+
+                                                    // Paginate the $modelNameLowerCase based on the 'paginate' value
+                                                    \$$modelNameLowerCase = $modelName::paginate(\$paginate); // Paginate with the specified number of items per page
+
+                                                    // Return the view with the paginated $modelNameLowerCase
+                                                    return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase'));
+                                                }
+
+                                                public function filter(Request \$request)
+                                                {
+                                                    // Retrieve 'from' and 'to' dates from the URL
+                                                    \$from = \$request->input('from');
+                                                    \$to = \$request->input('to');
+
+                                                    // Retrieve 'from' and 'to' dates from the URL
+                                                    \$from = \$request->input('from');
+                                                    \$to = \$request->input('to');
+
+                                                    // Default query for $modelNameLowerCase
+                                                    \$query = $modelName::query();
+
+                                                    // Convert dates to Carbon instances for better comparison
+                                                    \$fromDate = \$from ? Carbon::parse(\$from)->startOfDay() : null;
+                                                    \$toDate = \$to ? Carbon::parse(\$to)->endOfDay() : null;
+
+                                                    // Check if both 'from' and 'to' dates are provided
+                                                    if (\$fromDate && \$toDate) {
+                                                        // Ensure correct date filtering with full day range
+                                                        \$$modelNameLowerCase = \$query->whereBetween('created_at', [\$fromDate, \$toDate])
+                                                                    ->orderBy('created_at', 'desc')
+                                                                    ->paginate(10);
+                                                    } else {
+                                                        // If 'from' or 'to' are missing, show all $modelNameLowerCase without filtering
+                                                        \$$modelNameLowerCase = \$query->paginate(10);
+                                                    }
+
+                                                    // Return the view with $modelNameLowerCase and the selected date range
+                                                    return view('$modelNameLowerCase.$modelNameLowerCase', compact('$modelNameLowerCase', 'from', 'to'));
                                                 }
 
                                                 public function bulkDelete(Request \$request) {

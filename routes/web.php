@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Carbon\Carbon;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +11,16 @@ use App\Http\Controllers\SmarkController;
 
 use App\Http\Controllers\UsersController;
 use App\Models\Users;
+
+// end of import
+
+use App\Http\Controllers\TodosController;
+use App\Models\Todos;
+
+// end of import
+
+use App\Http\Controllers\NotesController;
+use App\Models\Notes;
 
 // end of import
 
