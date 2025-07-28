@@ -297,7 +297,7 @@ class SmarkController extends Controller
         return view('logs.logs', [
             'audits' => $audits]);
     }
-    
+
     // END OF ACTIVITY LOGS
 
     // BACKUPS
@@ -329,7 +329,7 @@ class SmarkController extends Controller
 
     public function modelViewer($model = null)
     {
-        
+
         // Get all model class names in app/Models directory
         $modelPath = app_path('Models');
         $files = FacadesFile::files($modelPath);
@@ -355,7 +355,7 @@ class SmarkController extends Controller
 
     public function usersSearch(Request $request)
     {
-        
+
         $search = $request->get('search');
 
         // Perform the search logic
@@ -380,7 +380,7 @@ class SmarkController extends Controller
 
     public function userFilter(Request $request)
     {
-        
+
         // Retrieve 'from' and 'to' dates from the URL
         $from = $request->input('from');
         $to = $request->input('to');
@@ -420,5 +420,5 @@ class SmarkController extends Controller
     {
         return view('postman.index');
     }
-    
+
 }
