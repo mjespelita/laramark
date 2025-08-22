@@ -7,9 +7,41 @@
     --border-muted: #6C757D;
 }
 
-body {
+/* body {
     font-family: 'Arial', sans-serif;
     background-color: var(--bg-dark);
+} */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: none;
+    position: relative;
+    height: 100vh;
+}
+
+/* Background blur + dark overlay */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url('/assets/def-bg.jpg') center center / cover no-repeat;
+    filter: blur(8px);
+    transform: scale(1.1); /* push edges outward */
+    background-color: rgba(0, 0, 0, 0.5); /* dark overlay */
+    background-blend-mode: multiply;
+    z-index: -1;
+}
+
+.content h1 {
+    color: #fff;
+}
+
+.dashboard-h1, .modal h1 {
+    color: #000 !important;
+}
+
+.top-b {
+    color: #fff !important;
 }
 
 .btn-success, .btn-info, .btn-primary {
@@ -137,6 +169,7 @@ body {
     .navbar .navbar-toggler-icon {
         border-color: var(--text-light);
         background-color: var(--text-light);
+        color: #000;
     }
 
     .sidebar-mobile a {
