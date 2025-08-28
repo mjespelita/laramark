@@ -14,7 +14,6 @@ use App\Models\Users;
 
 // end of import
 
-
 Route::get('/', function () {
     return view('welcome');
 });
