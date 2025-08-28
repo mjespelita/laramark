@@ -14,16 +14,6 @@ use App\Models\Users;
 
 // end of import
 
-use App\Http\Controllers\TodosController;
-use App\Models\Todos;
-
-// end of import
-
-use App\Http\Controllers\NotesController;
-use App\Models\Notes;
-
-// end of import
-
 
 Route::get('/', function () {
     return view('welcome');
