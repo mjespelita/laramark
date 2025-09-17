@@ -14,7 +14,7 @@
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.0",
         "owen-it/laravel-auditing": "^14.0",
-        "smark/smark": "^0.1.4"
+        "smark/smark": "^0.2.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
