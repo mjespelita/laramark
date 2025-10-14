@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e1b6440ae8cf4b51111bdcfefa0a2e7",
+    "content-hash": "72b1a56512763633b7cdb8b3cf1400a8",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -4615,16 +4615,16 @@
         },
         {
             "name": "smark/smark",
-            "version": "v0.2.0",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mjespelita/smark.git",
-                "reference": "42ca98a70e0915c94b508d1757832a947f3618a4"
+                "reference": "0c4f3960242ccd0f9d30e9b1e9a3ac3b099396b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mjespelita/smark/zipball/42ca98a70e0915c94b508d1757832a947f3618a4",
-                "reference": "42ca98a70e0915c94b508d1757832a947f3618a4",
+                "url": "https://api.github.com/repos/mjespelita/smark/zipball/0c4f3960242ccd0f9d30e9b1e9a3ac3b099396b0",
+                "reference": "0c4f3960242ccd0f9d30e9b1e9a3ac3b099396b0",
                 "shasum": ""
             },
             "require": {
@@ -4658,9 +4658,9 @@
             "description": "Smark PHP Library",
             "support": {
                 "issues": "https://github.com/mjespelita/smark/issues",
-                "source": "https://github.com/mjespelita/smark/tree/v0.2.0"
+                "source": "https://github.com/mjespelita/smark/tree/v0.3.0"
             },
-            "time": "2025-09-17T02:57:21+00:00"
+            "time": "2025-10-14T05:45:35+00:00"
         },
         {
             "name": "symfony/clock",
