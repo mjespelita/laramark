@@ -2,12 +2,15 @@
 
 use App\Models\Chatattachments;
 use App\Models\Chats;
+use App\Models\FacebookMessengerWebhook;
 use App\Models\Messages;
 use Carbon\Carbon;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Smark\Smark\Messenger;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -164,4 +167,21 @@ Artisan::command('file-cleanup', function () {
     }
 
     $this->info('File cleanup completed.');
+});
+
+Artisan::command('test-webhook', function () {
+    $reciepients = FacebookMessengerWebhook::where('user_app_id', 2)->value('psid');
+
+    // foreach ($reciepients as $key => $reciepient) {
+        Messenger::send(
+            env('MESSENGER_GRAPH_API'),
+            $reciepients,
+            'hello world. this is a reply from page. if u want to receive notifications in the future just reply "'. 2 .'" on this chat within 24 hours.'
+        );
+
+        $this->info('Sent');
+
+        // Optional: short delay to avoid rate limits
+        // usleep(500000); // 0.5s delay
+    // }
 });

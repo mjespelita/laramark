@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FacebookMessengerWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,11 @@ use App\Models\Users;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Facebook Messenger Webhook
+
+Route::get('/webhook', [FacebookMessengerWebhookController::class, 'verify']);
+Route::post('/webhook', [FacebookMessengerWebhookController::class, 'handle']);
 
 Route::middleware([
     'auth:sanctum',
@@ -84,6 +90,10 @@ Route::middleware([
 
     // Users Filter
     Route::get('/users-filter', [SmarkController::class, 'userFilter']);
+
+    // Messenger INIT page
+
+    Route::get('/receive-chat-notification', [FacebookMessengerWebhookController::class, 'init']);
 
     // end...
 

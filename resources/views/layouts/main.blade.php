@@ -57,6 +57,12 @@
                         'label' => 'Users',
                         'active' => request()->is('users', 'create-users', 'trash-users', 'show-users/*', 'edit-users/*', 'delete-users/*', 'users-search*'),
                     ],
+                    [
+                        'url' => 'receive-chat-notification',
+                        'icon' => 'fas fa-comment',
+                        'label' => 'Messenger Notification',
+                        'active' => request()->is('receive-chat-notification', 'create-receive-chat-notification', 'trash-receive-chat-notification', 'show-receive-chat-notification/*', 'edit-receive-chat-notification/*', 'delete-receive-chat-notification/*', 'receive-chat-notification-search*'),
+                    ],
                 ];
         @endphp
 
