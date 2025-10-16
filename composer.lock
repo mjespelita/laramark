@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "72b1a56512763633b7cdb8b3cf1400a8",
+    "content-hash": "6896f3a0a105628f62c86af5c3fa819f",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2039,16 +2039,16 @@
         },
         {
             "name": "laravel/serializable-closure",
-            "version": "v2.0.5",
+            "version": "v2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/serializable-closure.git",
-                "reference": "3832547db6e0e2f8bb03d4093857b378c66eceed"
+                "reference": "038ce42edee619599a1debb7e81d7b3759492819"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/3832547db6e0e2f8bb03d4093857b378c66eceed",
-                "reference": "3832547db6e0e2f8bb03d4093857b378c66eceed",
+                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/038ce42edee619599a1debb7e81d7b3759492819",
+                "reference": "038ce42edee619599a1debb7e81d7b3759492819",
                 "shasum": ""
             },
             "require": {
@@ -2096,7 +2096,7 @@
                 "issues": "https://github.com/laravel/serializable-closure/issues",
                 "source": "https://github.com/laravel/serializable-closure"
             },
-            "time": "2025-09-22T17:29:40+00:00"
+            "time": "2025-10-09T13:42:30+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -3582,16 +3582,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v6.11.1",
+            "version": "v6.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "d9e3b36b47f04b497a0164c5a20f92acb4593284"
+                "reference": "d1ac35d784bf9f5e61b424901d5a014967f15b12"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/d9e3b36b47f04b497a0164c5a20f92acb4593284",
-                "reference": "d9e3b36b47f04b497a0164c5a20f92acb4593284",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/d1ac35d784bf9f5e61b424901d5a014967f15b12",
+                "reference": "d1ac35d784bf9f5e61b424901d5a014967f15b12",
                 "shasum": ""
             },
             "require": {
@@ -3612,7 +3612,6 @@
             },
             "suggest": {
                 "decomplexity/SendOauth2": "Adapter for using XOAUTH2 authentication",
-                "ext-imap": "Needed to support advanced email address parsing according to RFC822",
                 "ext-mbstring": "Needed to send email in multibyte encoding charset or decode encoded addresses",
                 "ext-openssl": "Needed for secure SMTP sending and DKIM signing",
                 "greew/oauth2-azure-provider": "Needed for Microsoft Azure XOAUTH2 authentication",
@@ -3652,7 +3651,7 @@
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
             "support": {
                 "issues": "https://github.com/PHPMailer/PHPMailer/issues",
-                "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.11.1"
+                "source": "https://github.com/PHPMailer/PHPMailer/tree/v6.12.0"
             },
             "funding": [
                 {
@@ -3660,7 +3659,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-09-30T11:54:53+00:00"
+            "time": "2025-10-15T16:49:08+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -4615,16 +4614,16 @@
         },
         {
             "name": "smark/smark",
-            "version": "v0.3.0",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mjespelita/smark.git",
-                "reference": "0c4f3960242ccd0f9d30e9b1e9a3ac3b099396b0"
+                "reference": "ccb7f073337a4daac98b781b0cf2d50e2c50f109"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mjespelita/smark/zipball/0c4f3960242ccd0f9d30e9b1e9a3ac3b099396b0",
-                "reference": "0c4f3960242ccd0f9d30e9b1e9a3ac3b099396b0",
+                "url": "https://api.github.com/repos/mjespelita/smark/zipball/ccb7f073337a4daac98b781b0cf2d50e2c50f109",
+                "reference": "ccb7f073337a4daac98b781b0cf2d50e2c50f109",
                 "shasum": ""
             },
             "require": {
@@ -4658,9 +4657,9 @@
             "description": "Smark PHP Library",
             "support": {
                 "issues": "https://github.com/mjespelita/smark/issues",
-                "source": "https://github.com/mjespelita/smark/tree/v0.3.0"
+                "source": "https://github.com/mjespelita/smark/tree/v0.4.0"
             },
-            "time": "2025-10-14T05:45:35+00:00"
+            "time": "2025-10-16T06:51:53+00:00"
         },
         {
             "name": "symfony/clock",
