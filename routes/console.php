@@ -176,7 +176,15 @@ Artisan::command('test-webhook', function () {
         Messenger::send(
             env('MESSENGER_GRAPH_API'),
             $reciepients,
-            'hello world. this is a reply from page. if u want to receive notifications in the future just reply "'.  1  .'" on this chat within 24 hours.'
+            "⚠️ Reminder:
+
+- Always reply with *1* to keep receiving notifications.
+
+- If you send other reply or don’t respond within 24 hours, you’ll stop getting updates.
+
+- You can restart anytime by sending *1* again.
+
+Thank you for staying connected!"
         );
 
         $this->info('Sent');

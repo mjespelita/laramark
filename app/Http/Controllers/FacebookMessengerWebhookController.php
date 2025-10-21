@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class FacebookMessengerWebhookController extends Controller
 {
-    private $VERIFY_TOKEN = 'MY_VERIFY_TOKEN'; // must match your webhook verify token
+    private $VERIFY_TOKEN = 'Testing123456789!'; // must match your webhook verify token
 
     public function init()
     {
