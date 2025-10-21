@@ -170,13 +170,13 @@ Artisan::command('file-cleanup', function () {
 });
 
 Artisan::command('test-webhook', function () {
-    $reciepients = FacebookMessengerWebhook::where('user_app_id', 2)->value('psid');
+    $reciepients = FacebookMessengerWebhook::where('user_app_id', 1)->value('psid');
 
     // foreach ($reciepients as $key => $reciepient) {
         Messenger::send(
             env('MESSENGER_GRAPH_API'),
             $reciepients,
-            'hello world. this is a reply from page. if u want to receive notifications in the future just reply "'. 2 .'" on this chat within 24 hours.'
+            'hello world. this is a reply from page. if u want to receive notifications in the future just reply "'.  1  .'" on this chat within 24 hours.'
         );
 
         $this->info('Sent');
