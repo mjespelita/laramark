@@ -15,4 +15,23 @@
             </div>
         </div>
     </div>
+
+    <script src="{{ url('assets/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url('assets/pusher/pusher.min.js') }}"></script>
+    <script src="{{ url('assets/pusher/pusher-config.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $.get('/user', function (res) {
+                // console.log('👤 Authenticated User ID:', res.id);
+
+                // ✅ Subscribe to the PRIVATE channel
+                const channel = pusher.subscribe('private-hello-message.' + 23);
+
+                // ✅ Event name matches your PHP (hello-message-event)
+                channel.bind('hello-message-event', function (data) {
+                    console.log('✅ Received from Laravel:', data);
+                });
+            });
+        });
+    </script>
 @endsection

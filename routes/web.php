@@ -4,6 +4,8 @@ use App\Http\Controllers\FacebookMessengerWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Events\SamplePrivateEvent;
+
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SmarkController;
@@ -33,6 +35,15 @@ Route::middleware([
     Route::get('/user', function () {
         return response()->json(Auth::user());
     });
+
+    // WEBSOCKETS
+
+    Route::get('/test-pusher', function () {
+        event(new SamplePrivateEvent(23, 'Hello from Laravel!'));
+        return 'Event has been sent!';
+    });
+
+    // END WEB SOCKETS
 
     // CHAT ROUTES
 

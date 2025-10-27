@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Smark\Smark\Messenger;
 
+use App\Events\SamplePrivateEvent;
+
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
@@ -192,4 +194,9 @@ Thank you for staying connected!"
         // Optional: short delay to avoid rate limits
         // usleep(500000); // 0.5s delay
     // }
+});
+
+Artisan::command('test-pusher-auth', function () {
+    event(new SamplePrivateEvent(23, 'Hello from Laravel Auth!'));
+    $this->info('done');
 });
