@@ -14,6 +14,8 @@ use Smark\Smark\Messenger;
 
 use App\Events\SamplePrivateEvent;
 
+use App\Smark\AI;
+
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
@@ -199,4 +201,8 @@ Thank you for staying connected!"
 Artisan::command('test-pusher-auth', function () {
     event(new SamplePrivateEvent(23, 'Hello from Laravel Auth!'));
     $this->info('done');
+});
+
+Artisan::command('test-smark {prompt}', function ($prompt) {
+    $this->info(AI::prompt($prompt));
 });

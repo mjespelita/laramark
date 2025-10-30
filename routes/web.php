@@ -9,6 +9,7 @@ use App\Events\SamplePrivateEvent;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SmarkController;
+use App\Http\Controllers\PaymongoPaymentController;
 
 // end of import
 
@@ -25,6 +26,10 @@ Route::get('/', function () {
 
 Route::get('/webhook', [FacebookMessengerWebhookController::class, 'verify']);
 Route::post('/webhook', [FacebookMessengerWebhookController::class, 'handle']);
+
+// PAYMONGO CALLBACK
+
+Route::post('/callback-payment', [PaymongoPaymentController::class, 'callbackPayment']);
 
 Route::middleware([
     'auth:sanctum',
@@ -44,6 +49,13 @@ Route::middleware([
     });
 
     // END WEB SOCKETS
+
+    // PAYMONGO PAYMENT
+
+    Route::get('/test-payment', [PaymongoPaymentController::class, 'testPaymentPage']);
+    Route::post('/create-payment', [PaymongoPaymentController::class, 'createPayment']);
+
+    // END PAYMONGO PAYMENT
 
     // CHAT ROUTES
 
