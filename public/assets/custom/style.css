@@ -1,0 +1,217 @@
+:root {
+    --primary-dark: rgb(29, 0, 29);
+    --primary: rgb(65, 0, 65);
+    --text-light: #e3e3e3;
+    --bg-light: #ffffff;
+    --bg-dark: #e3e3e3;
+    --border-muted: #6C757D;
+}
+
+/* body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-dark);
+} */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: none;
+    position: relative;
+    height: 100vh;
+}
+
+/* Background blur + dark overlay */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url('/assets/def-bg.jpg') center center / cover no-repeat;
+    filter: blur(8px);
+    transform: scale(1.1); /* push edges outward */
+    background-color: rgba(0, 0, 0, 0.5); /* dark overlay */
+    background-blend-mode: multiply;
+    z-index: -1;
+}
+
+.content h1 {
+    color: #fff;
+}
+
+.dashboard-h1, .modal h1 {
+    color: #000 !important;
+}
+
+.top-b {
+    color: #fff !important;
+}
+
+.btn-success, .btn-info, .btn-primary {
+    background: var(--primary) !important;
+    border: none;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    background-color: var(--bg-light) !important;
+    border: 1px solid var(--border-muted);
+}
+
+#mobileSidebar .active {
+    background-color: var(--primary) !important;
+}
+
+.navbar {
+    background-color: var(--primary-dark);
+}
+
+.active > .page-link, .page-link.active {
+    z-index: 3;
+    color: var(--text-light);
+    border-color: var(--primary-dark);
+    background-color: var(--primary);
+}
+
+.page-link {
+    color: var(--primary-dark);
+}
+
+#mobileSidebar {
+    z-index: 1;
+}
+
+.sidebar {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    background: linear-gradient(var(--primary), black);
+    color: var(--text-light);
+    transition: all 0.3s;
+    padding-top: 60px;
+    overflow-x: scroll;
+}
+
+.sidebar img {
+    width: 50% !important;
+}
+
+.sidebar a {
+    color: var(--text-light);
+    text-decoration: none;
+    padding: 15px 20px;
+    display: block;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: var(--primary);
+}
+
+.sidebar a i {
+    margin-right: 10px;
+}
+
+.sidebar .logo {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.sidebar .logo img {
+    width: 50px;
+}
+
+.content {
+    margin-left: 240px;
+    padding: 20px;
+    transition: margin-left 0.3s;
+}
+
+.navbar .navbar-brand,
+.navbar-nav .nav-link {
+    color: var(--text-light);
+}
+
+.navbar .navbar-toggler,
+.navbar .navbar-toggler-icon {
+    border-color: var(--text-light);
+    background-color: var(--text-light);
+}
+
+.card .card-body {
+    padding: 25px;
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 250px;
+        left: -250px;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .content {
+        margin-left: 0;
+    }
+
+    .navbar .navbar-toggler,
+    .navbar .navbar-toggler-icon {
+        border-color: var(--text-light);
+        background-color: var(--text-light);
+        color: #000;
+    }
+
+    .sidebar-mobile a {
+        color: var(--text-light);
+        text-decoration: none;
+        padding: 15px;
+        display: block;
+    }
+
+    .sidebar-mobile.active {
+        display: block;
+    }
+
+    h1 { font-size: 1.2rem; }
+    h2 { font-size: 1.1rem; }
+    h3 { font-size: 1rem; }
+    h4 { font-size: 0.95rem; }
+    h5 { font-size: 0.9rem; }
+    h6 { font-size: 0.85rem; }
+
+    p, a, span, label, li, td, th, input, button, select, textarea {
+        font-size: 0.75rem !important;
+    }
+
+    .card-title {
+        font-size: 0.9rem;
+    }
+
+    .sidebar a {
+        font-size: 12px;
+    }
+
+    .sidebar .logo {
+        font-size: 16px;
+    }
+
+    .navbar .navbar-brand {
+        font-size: 0.9rem;
+    }
+
+    .btn, .btn-primary, .btn-success, .btn-info {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+}
